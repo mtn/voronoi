@@ -1,0 +1,14 @@
+Algorithm:
+    - New arcs only introduced on the beach line by point events, which are known in advance
+    - Vertex events generated dynamically as algorithm runs when a parabola on beachline converges
+        - Check each consecutive three arcs on the beachline.
+            1) Compute the circumcircle
+            2) Check if the 4th endpoint lies below the sweep line
+            3) If it is, create a vertex event with y coordinate equal to that of the 4th point
+
+
+    Point Events: Some new point p_i lies on L
+        In o(logn), find out which arc currently defines the beachline at that location
+
+
+http://www.cs.sfu.ca/~binay/813.2011/Fortune.pdf
