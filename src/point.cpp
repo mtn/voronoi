@@ -1,23 +1,26 @@
 #include "lib/point.h"
-#include "lib/line.h"
 
 #include <cmath>
-#include <cassert>
 
-double Point::dist(Point a) {
-    return sqrt(pow(a.x-this->x,2) + pow(a.y-this->y,2));
+
+Point::Point(double x, double y) {
+    this->x = x;
+    this->y = y;
 }
 
-double Point::dist(Line* l) {
-    assert(l->slope == 0);
-    return std::abs(this->y - l->yIntercept);
+double Point::dist(Point* a, Point* b) {
+    return sqrt(pow(a->x-b->x,2) + pow(a->y-b->y,2));
 }
 
-Point* Point::midPoint(Point a) {
-    return new Point((a.x + this->x) / 2, (a.y + this->y) / 2);
+Point* Point::midPoint(Point* a, Point* b) {
+    return new Point((a->x + b->x) / 2, (a->y + b->y) / 2);
 }
 
-Point* Point::midPoint(Point a, Point b) {
-    return new Point((a.x + b.x) / 2, (a.y + b.y) / 2);
+double Point::slope(Point* a, Point* b) {
+    if(a->x > b->x) {
+        return (a->y - b->y) / (a->x - b->x);
+    } else {
+        return (b->y - a->y) / (b->x - a->x);
+    }
 }
 

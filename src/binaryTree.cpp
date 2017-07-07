@@ -6,13 +6,12 @@ BinaryTree::BinaryTree() {
     root = NULL;
 }
 
-
 void BinaryTree::insert(void* val) {
 
 }
 
 node* BinaryTree::search(void* val) {
-    
+
 }
 
 void BinaryTree::destroy_tree(node *leaf) {
