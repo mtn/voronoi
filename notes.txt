@@ -10,5 +10,11 @@ Algorithm:
     Point Events: Some new point p_i lies on L
         In o(logn), find out which arc currently defines the beachline at that location
 
+    Binary tree of parabolas: parabolas have
+            1) focus
+            2) associated site
+            3) a parent (for traversing horizontally, private)
+    Some sort of priority queue for events, priority by y
+
 
 http://www.cs.sfu.ca/~binay/813.2011/Fortune.pdf
