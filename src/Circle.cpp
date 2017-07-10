@@ -6,12 +6,24 @@ Circle::Circle(Point* center, double radius) {
 }
 
 Circle* computeCircumcircle(Point* a, Point* b, Point* c) {
+
     Point* midptAB = Point::midPoint(a,b);
     double slopeAB = Point::slope(a,b);
     double slopeBisAB = -1/slopeAB;
+    Line* abBisector = new Line(midptAB,slopeBisAB);
 
-    Line* abcdBisector = new Line::Line(midptAB,slopeBisAB);
-    return new Circle(new Point(1,2),2);
+    Point* midptAC = Point::midPoint(a,b);
+    double slopeAC = Point::slope(a,b);
+    double slopeBisAC = -1/slopeAC;
+    Line* acBisector = new Line(midptAC,slopeBisAC);
+
+    Point* center = Line::getIntersection(abBisector,acBisector);
+    return new Circle(center,Point::dist(center,a));
 }
 
+bool isVertexEvent(Point* a, Point* b, Point* c) {
+    /* Circle* d = computeCircumcircle(a,b,c); */
+
+    return true;
+}
 

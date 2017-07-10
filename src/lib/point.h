@@ -10,9 +10,9 @@ class Point {
         double x;
         double y;
 
-        double dist(Point* a, Point* b);
         double dist(Line* l);
 
+        static double dist(Point* a, Point* b);
         static Point* midPoint(Point* a, Point* b);
         static double slope(Point* a, Point* b);
 };
