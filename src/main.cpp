@@ -1,6 +1,5 @@
 #include "lib/line.h"
 #include "lib/point.h"
-#include "lib/parabola.h"
 #include "lib/circle.h"
 #include "lib/voronoi.h"
 
@@ -31,16 +30,12 @@ int main(int argc, char** argv) {
 
     }
 
-    Point* a = new Point(1,2);
-    Point* b = new Point(3,4);
-    Point* c = new Point(5,1);
+    Point* a = new Point(-1,-2);
+    Point* b = new Point(2,3);
+    Point* c = new Point(3,-3);
 
     Circle* d = Circle::computeCircumcircle(a,b,c);
-    if(d != nullptr) {
-        cout << "it was not null" << endl;
-    } else {
-        cout << "it was null" << endl;
-    }
+    cout << "center: " << d->center->x << "," << d->center->y << endl;
 
 
 

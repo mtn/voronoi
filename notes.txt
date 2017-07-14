@@ -9,9 +9,12 @@ Algorithm:
 
     Point Events: Some new point p_i is encountered on L
         In o(logn), find out which arc currently defines the beachline at that location
+        example transformation: pi pj pk -> pi pj pl pj pk
+        each addition increases total number of segments by 2
 
     Circle Events:
         parabolic arc shrinks to a point, disappearing from parabolic front.
+        determines a vertex in the voronoi diagram
 
     Termination condition: once all points are behind sweepline, diagram is surrounded by a box
 
@@ -38,6 +41,8 @@ Algorithm:
             3) a parent (for traversing horizontally, private)
     Some sort of priority queue for events
         priority comparison based on y. if y is equal, by x
+        for circle events, this is the y position of the sweep line that would be tangent to the bottom of the circle
+        every time we process of point event off the queue we potentially add 2 circle events
 
     The bisector of neighboring sights is the intersection of their parabolas
 
@@ -49,3 +54,5 @@ Algorithm:
 
 http://cs.nyu.edu/yap/bks/egc/09/7Vor.pdf
 http://www.cs.sfu.ca/~binay/813.2011/Fortune.pdf
+https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-854j-advanced-algorithms-fall-2008/lecture-notes/lec23.pdf
+http://www.raymondhill.net/voronoi/rhill-voronoi.html
