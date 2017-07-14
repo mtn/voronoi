@@ -24,3 +24,15 @@ double Point::slope(Point* a, Point* b) {
     }
 }
 
+const bool Point::operator<(const Point& a) {
+    return this->y < a.y;
+}
+
+const bool Point::operator==(const Point& a) {
+    return a.y == this->y;
+}
+
+/* bool Point::operator>(const Point& a) { */
+/*     return a.y < this->y; */
+/* } */
+

@@ -32,5 +32,4 @@
 *.app
 thiessen
 
-*.swp
-*.swo
+*.sw*

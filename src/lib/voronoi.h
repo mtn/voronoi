@@ -10,7 +10,9 @@ class Node {
         Node* parent;
         Node* left;
         Node* right;
+
         double breakpoint;
+        Point* site;
 
         // In-order next and prev
         Node* succ();
@@ -39,6 +41,7 @@ class VTree {
         static double computeBreakpoint(Point* p1, Point* p2);
 
         Node* root;
+        Node* firstLeaf;
 };
 
 

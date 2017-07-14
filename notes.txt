@@ -47,5 +47,5 @@ Algorithm:
         sweep table: "The sweep table maintains a cross-section of how the sweepline intersects the regions and edges of the Voronoi diagram. This table is updated at each event."
 
 
-http://old.cescg.org/CESCG99/RCuk/algorithm.html
+http://cs.nyu.edu/yap/bks/egc/09/7Vor.pdf
 http://www.cs.sfu.ca/~binay/813.2011/Fortune.pdf

@@ -15,7 +15,15 @@ class Point {
         static double dist(Point* a, Point* b);
         static Point* midPoint(Point* a, Point* b);
         static double slope(Point* a, Point* b);
+
+        // returns true is a has a larger y value than b
+
+        const bool operator==(const Point& a);
+        const bool operator<(const Point& a);
+        /* const bool operator>(const Point& a); */
+
 };
+
 
 #endif /* POINT_H */
 
