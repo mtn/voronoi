@@ -5,6 +5,14 @@
 #include <limits>
 
 
+double getEventPriority(Event e) {
+    if(e.type == PointE) {
+        return e.pe->y;
+    } else {
+        return e.ce->c->center->y + e.ce->c->radius;
+    }
+}
+
 Node* Node::succ() {
     if(this->right != NULL) {
         return this->right->getMinimum();

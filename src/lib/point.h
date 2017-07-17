@@ -18,8 +18,8 @@ class Point {
 
         // returns true is a has a larger y value than b
 
-        const bool operator==(const Point& a);
-        const bool operator<(const Point& a);
+        /* const bool operator==(const Point& a); */
+        /* const bool operator<(const Point& a); */
         /* const bool operator>(const Point& a); */
 
 };
