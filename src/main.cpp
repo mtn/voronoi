@@ -14,7 +14,7 @@ using namespace std;
 
 template<typename T> void print_queue(T& q) {
     while(!q.empty()) {
-        std::cout << q.top().pe->x << "," <<  q.top().pe->y << endl;
+        std::cout << q.top()->pe->x << "," <<  q.top()->pe->y << endl;
 
         q.pop();
     }
@@ -23,7 +23,7 @@ template<typename T> void print_queue(T& q) {
 
 int main(int argc, char** argv) {
 
-    std::priority_queue<Event,vector<Event>,CompareEvent> pq;
+    std::priority_queue<Event*,vector<Event*>,CompareEvent> pq;
 
     if(argc > 1) {
         ifstream fs (argv[1]);
@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
             tmp->type = PointE;
             tmp->pe = new Point(a,b);
 
-            pq.push(*tmp);
+            pq.push(tmp);
         }
 
         print_queue(pq);

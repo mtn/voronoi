@@ -5,11 +5,11 @@
 #include <limits>
 
 
-double getEventPriority(Event e) {
-    if(e.type == PointE) {
-        return e.pe->y;
+double getEventPriority(const Event* e) {
+    if(e->type == PointE) {
+        return e->pe->y;
     } else {
-        return e.ce->c->center->y + e.ce->c->radius;
+        return e->ce->c->center->y + e->ce->c->radius;
     }
 }
 

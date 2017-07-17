@@ -28,9 +28,9 @@ typedef struct {
     PointEvent* pe;
 } Event;
 
-double getEventPriority(Event e);
+double getEventPriority(const Event* e);
 struct CompareEvent {
-    bool operator()(const Event e1, const Event e2) const {
+    bool operator()(const Event* e1, const Event* e2) const {
         double e1Y = getEventPriority(e1);
         double e2Y = getEventPriority(e2);
         return e1Y > e2Y;
