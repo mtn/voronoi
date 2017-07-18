@@ -16,6 +16,8 @@ Algorithm:
         parabolic arc shrinks to a point, disappearing from parabolic front.
         determines a vertex in the voronoi diagram
 
+        1) check that they are still contiguous on the beachline
+
     Termination condition: once all points are behind sweepline, diagram is surrounded by a box
 
     Pseudocode:

@@ -13,7 +13,7 @@ double getEventPriority(const Event* e) {
     }
 }
 
-Node* Node::succ() {
+VTreeNode* VTreeNode::succ() {
     if(this->right != NULL) {
         return this->right->getMinimum();
     } else {
@@ -21,7 +21,7 @@ Node* Node::succ() {
     }
 }
 
-Node* Node::getMinimum() {
+VTreeNode* VTreeNode::getMinimum() {
     if(this->left != NULL) {
         return this->left->getMinimum();
     } else {
@@ -29,23 +29,23 @@ Node* Node::getMinimum() {
     }
 }
 
-Node* Node::findSuccessorInAncestors() {
+VTreeNode* VTreeNode::findSuccessorInAncestors() {
     if(this->parent && this == this->parent->right) {
         return this->parent->findSuccessorInAncestors();
     } else {
-        return this;
+        return this->parent;
     }
 }
 
-Node* Node::pred() {
-    if(this->right != NULL) {
+VTreeNode* VTreeNode::pred() {
+    if(this->left != NULL) {
         return this->left->getMaximum();
     } else {
         return this->findPredecessorInAncestors();
     }
 }
 
-Node* Node::getMaximum() {
+VTreeNode* VTreeNode::getMaximum() {
     if(this->right != NULL) {
         return this->right->getMaximum();
     } else {
@@ -53,11 +53,11 @@ Node* Node::getMaximum() {
     }
 }
 
-Node* Node::findPredecessorInAncestors() {
+VTreeNode* VTreeNode::findPredecessorInAncestors() {
     if(this->parent && this == this->parent->left) {
         return this->parent->findPredecessorInAncestors();
     } else {
-        return this;
+        return this->parent;
     }
 }
 
@@ -74,7 +74,7 @@ void VTree::destroyTree() {
     destroyTree(root);
 }
 
-void VTree::destroyTree(Node* leaf) {
+void VTree::destroyTree(VTreeNode* leaf) {
     if(leaf != NULL) {
         destroyTree(leaf->left);
         destroyTree(leaf->right);
@@ -86,19 +86,19 @@ void VTree::insert(double x) {
     if(root != NULL) {
         insert(x,root);
     } else {
-        root = new Node;
+        root = new VTreeNode;
         root->breakpoint = x;
         root->left = NULL;
         root->right = NULL;
     }
 }
 
-void VTree::insert(double breakpoint, Node* node) {
+void VTree::insert(double breakpoint, VTreeNode* node) {
     if(breakpoint < node->breakpoint) {
         if(node->left != NULL) {
             insert(breakpoint,node->left);
         } else {
-            node->left = new Node;
+            node->left = new VTreeNode;
             node->left->breakpoint = breakpoint;
             node->left->left = NULL;
             node->left->right= NULL;
@@ -107,7 +107,7 @@ void VTree::insert(double breakpoint, Node* node) {
         if(node->right != NULL) {
             insert(breakpoint,node->right);
         } else {
-            node->right = new Node;
+            node->right = new VTreeNode;
             node->right->breakpoint = breakpoint;
             node->right->left = NULL;
             node->right->right= NULL;

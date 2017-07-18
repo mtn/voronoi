@@ -14,7 +14,10 @@ using namespace std;
 
 template<typename T> void print_queue(T& q) {
     while(!q.empty()) {
-        std::cout << q.top()->pe->x << "," <<  q.top()->pe->y << endl;
+        if(q.top()->type == PointE)
+            std::cout << q.top()->pe->x << "," <<  q.top()->pe->y << endl;
+        else
+            std::cout << "circleevent" << endl;
 
         q.pop();
     }
@@ -26,7 +29,7 @@ int main(int argc, char** argv) {
     std::priority_queue<Event*,vector<Event*>,CompareEvent> pq;
 
     if(argc > 1) {
-        ifstream fs (argv[1]);
+        ifstream fs(argv[1]);
         double a, b;
         Event* tmp;
 
@@ -38,12 +41,19 @@ int main(int argc, char** argv) {
             pq.push(tmp);
         }
 
-        print_queue(pq);
         fs.close();
-        return 0;
     } else { // Generate the points
 
     }
+
+    /* CircleEvent* ce = new CircleEvent; */
+    /* ce->c = new Circle(new Point(0.5,0.5),0.5); */
+    /* Event* e = new Event; */
+    /* e->ce = ce; */
+    /* e->type = CircleE; */
+    /* pq.push(e); */
+
+    print_queue(pq);
 
 
 

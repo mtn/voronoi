@@ -5,10 +5,11 @@
 
 #include "point.h"
 #include "circle.h"
-/* class Point; */
-/* class Circle; */
 
-enum EventType { CircleE, PointE };
+enum EventType       { CircleE, PointE };
+enum CompareResult   { GreaterThan, EqualTo, LessThan };
+enum Color           { Red, Black };
+
 
 typedef struct {
     Point* p1;
@@ -28,6 +29,8 @@ typedef struct {
     PointEvent* pe;
 } Event;
 
+// Event priority is simply a y value, determining when an event
+// comes off the queue
 double getEventPriority(const Event* e);
 struct CompareEvent {
     bool operator()(const Event* e1, const Event* e2) const {
@@ -38,28 +41,45 @@ struct CompareEvent {
 };
 
 
-class Node {
-    public:
-        Node* parent;
-        Node* left;
-        Node* right;
+typedef struct {
+    Point* left;
+    Point* right;
 
-        double breakpoint;
-        Point* site;
+    int intersect;
+} Breakpoint;
+
+class VTreeNode {
+    public:
+        VTreeNode* parent;
+        VTreeNode* left;
+        VTreeNode* right;
+
+        Color color;
+
+        Breakpoint* bp;
 
         // In-order next and prev
-        Node* succ();
-        Node* pred();
+        VTreeNode* succ();
+        VTreeNode* pred();
 
     private:
-        Node* getMinimum(); // Returns minimal node in subtree
-        Node* getMaximum(); // Returns maximal node in subtree
-        Node* findSuccessorInAncestors();
-        Node* findPredecessorInAncestors();
+        void rotateLeft();
+        void rotateRight();
+
+        VTreeNode* getMinimum(); // Returns minimal node in subtree
+        VTreeNode* getMaximum(); // Returns maximal node in subtree
+        VTreeNode* findSuccessorInAncestors();
+        VTreeNode* findPredecessorInAncestors();
 };
 
-// Implementation based on http://www.cprogramming.com/tutorial/lesson18.html
+
+// Implemented as a RB tree (without modifications!)
+// Neither parabolas nor arcs are explicitly represented in the tree.
+// Rather, as null values in the RB tree, their identities can be derived from the
+// breakpoints above.
+// Implementation based on Thomas Niemann's original C source
 class VTree {
+
     public:
         VTree();
         ~VTree();
@@ -68,13 +88,13 @@ class VTree {
         void insert(double x); // Receieves site's x coord as argument
 
     private:
-        void destroyTree(Node* leaf);
-        void insert(double x, Node* leaf);
+        void destroyTree(VTreeNode* leaf);
+        void insert(double x);
 
         static double computeBreakpoint(Point* p1, Point* p2);
 
-        Node* root;
-        Node* firstLeaf;
+        VTreeNode* root;
+        VTreeNode* firstLeaf; // The leftmost leaf
 };
 
 
