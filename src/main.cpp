@@ -2,15 +2,22 @@
 #include "lib/point.h"
 #include "lib/circle.h"
 #include "lib/voronoi.h"
+#include "lib/breakpoint.h"
 
 #include <iostream>
 #include <fstream>
 #include <cstdio>
 #include <cstdlib>
+
+#include <utility>
 #include <queue>
-#include <list>
+#include <set>
 
 using namespace std;
+
+// Breakpoints are defined only in terms of two points (all other information is
+// calculated in constant time).
+typedef std::pair<const Point*,const Point*> Breakpoint;
 
 template<typename T> void print_queue(T& q) {
     while(!q.empty()) {
@@ -53,7 +60,13 @@ int main(int argc, char** argv) {
     /* e->type = CircleE; */
     /* pq.push(e); */
 
-    print_queue(pq);
+    /* set<Point,ComparePoint> beachline; */
+
+    /* Breakpoint p(new Point(1,2),new Point(2,3)); */
+
+    /* std::cout << p.first << "," << p.second << endl; */
+
+    /* print_queue(pq); */
 
 
 
