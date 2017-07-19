@@ -13,6 +13,15 @@ double getEventPriority(const Event* e) {
     }
 }
 
+
+VTreeNode::VTreeNode(double breakpoint) {
+    this->breakpoint.intersect = breakpoint;
+    this
+}
+
+VTreeNode::~VTreeNode() {
+}
+
 VTreeNode* VTreeNode::succ() {
     if(this->right != NULL) {
         return this->right->getMinimum();
@@ -86,20 +95,17 @@ void VTree::insert(double x) {
     if(root != NULL) {
         insert(x,root);
     } else {
-        root = new VTreeNode;
-        root->breakpoint = x;
-        root->left = NULL;
-        root->right = NULL;
+        root = new VTreeNode(x);
     }
 }
 
 void VTree::insert(double breakpoint, VTreeNode* node) {
-    if(breakpoint < node->breakpoint) {
+    if(breakpoint < node->breakpoint.intersect) {
         if(node->left != NULL) {
             insert(breakpoint,node->left);
         } else {
-            node->left = new VTreeNode;
-            node->left->breakpoint = breakpoint;
+            node->left = new VTreeNode(breakpoint);
+            /* node->left->breakpoint = breakpoint; */
             node->left->left = NULL;
             node->left->right= NULL;
         }
@@ -107,15 +113,16 @@ void VTree::insert(double breakpoint, VTreeNode* node) {
         if(node->right != NULL) {
             insert(breakpoint,node->right);
         } else {
-            node->right = new VTreeNode;
-            node->right->breakpoint = breakpoint;
+            node->right = new VTreeNode(breakpoint);
+            node->right->breakpoint.intersect = breakpoint;
             node->right->left = NULL;
             node->right->right= NULL;
         }
     }
 }
 
-double computeBreakpoint(Point* p1, Point* p2) {
+// Each point is the focus of a parabola, and the directrix is shared
+double computeBreakpoint(Point* f1, Point* f2, double y) {
 
     return 0;
 }

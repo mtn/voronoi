@@ -44,23 +44,29 @@ struct CompareEvent {
 typedef struct {
     Point* left;
     Point* right;
-
-    int intersect;
 } Breakpoint;
 
+// VTreeNodes hold breakpoints as a pair of sites that "own" the intersecting parablas
+// When traversing the tree, the intersection is (and must be) calculated on the fly,
+// but in constant time. Through this, ordering remains invariant.
 class VTreeNode {
     public:
+        VTreeNode(Point* left, Point* right);
+        ~VTreeNode();
+
+
         VTreeNode* parent;
         VTreeNode* left;
         VTreeNode* right;
 
         Color color;
 
-        Breakpoint* bp;
+        Breakpoint breakpoint;
 
-        // In-order next and prev
-        VTreeNode* succ();
-        VTreeNode* pred();
+        // In-order successor and predecessor
+        // TODO adapt for rb tree
+        VTreeNode* succ() const;
+        VTreeNode* pred() const;
 
     private:
         void rotateLeft();
@@ -77,7 +83,7 @@ class VTreeNode {
 // Neither parabolas nor arcs are explicitly represented in the tree.
 // Rather, as null values in the RB tree, their identities can be derived from the
 // breakpoints above.
-// Implementation based on Thomas Niemann's original C source
+// Implementation based on windoro's gist (https://gist.github.com/windoro/1c8e458e9ab5e8e4c5bb)
 class VTree {
 
     public:
@@ -89,7 +95,7 @@ class VTree {
 
     private:
         void destroyTree(VTreeNode* leaf);
-        void insert(double x);
+        void insert(double breakpoint, VTreeNode* node);
 
         static double computeBreakpoint(Point* p1, Point* p2);
 

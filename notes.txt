@@ -1,6 +1,7 @@
 Algorithm:
     - New arcs only introduced on the beach line by point events, which are known in advance
     - Vertex events generated dynamically as algorithm runs when a parabola on beachline converges
+        Center of an empty circle formed by 3 sites
         - Check each consecutive three arcs on the beachline.
             1) Compute the circumcircle
             2) Check if the 4th endpoint lies below the sweep line
