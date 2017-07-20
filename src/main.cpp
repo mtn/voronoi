@@ -2,12 +2,12 @@
 #include "lib/point.h"
 #include "lib/circle.h"
 #include "lib/voronoi.h"
-#include "lib/breakpoint.h"
 
 #include <iostream>
 #include <fstream>
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
 
 #include <utility>
 #include <queue>
@@ -15,9 +15,6 @@
 
 using namespace std;
 
-// Breakpoints are defined only in terms of two points (all other information is
-// calculated in constant time).
-typedef std::pair<const Point*,const Point*> Breakpoint;
 
 template<typename T> void print_queue(T& q) {
     while(!q.empty()) {
@@ -35,12 +32,16 @@ int main(int argc, char** argv) {
 
     std::priority_queue<Event*,vector<Event*>,CompareEvent> pq;
 
+    double boundX = 0, boundY = 0;
     if(argc > 1) {
         ifstream fs(argv[1]);
         double a, b;
         Event* tmp;
 
         while(fs >> a >> b){
+            if(a > boundX) boundX = a;
+            if(b > boundY) boundY = b;
+
             tmp = new Event;
             tmp->type = PointE;
             tmp->pe = new Point(a,b);
@@ -48,8 +49,12 @@ int main(int argc, char** argv) {
             pq.push(tmp);
         }
 
+        boundX = ceil(boundX);
+        boundY = ceil(boundY); // TODO scale/coerce these values to 1x1
+
         fs.close();
     } else { // Generate the points
+        boundX = boundY = 1;
 
     }
 
