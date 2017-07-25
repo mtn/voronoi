@@ -2,6 +2,7 @@
 #include "lib/point.h"
 #include "lib/circle.h"
 #include "lib/voronoi.h"
+#include "lib/halfedge.h"
 
 #include <iostream>
 #include <fstream>
@@ -50,7 +51,7 @@ int main(int argc, char** argv) {
         }
 
         boundX = ceil(boundX);
-        boundY = ceil(boundY); // TODO scale/coerce these values to 1x1
+        boundY = ceil(boundY);
 
         fs.close();
     } else { // Generate the points

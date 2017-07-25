@@ -4,8 +4,7 @@ Algorithm:
         Center of an empty circle formed by 3 sites
         - Check each consecutive three arcs on the beachline.
             1) Compute the circumcircle
-            2) Check if the 4th endpoint lies below the sweep line
-            3) If it is, create a vertex event with y coordinate equal to that of the 4th point
+            2) Check if the 4th endpoint lies below the sweep line 3) If it is, create a vertex event with y coordinate equal to that of the 4th point
 
 
     Point Events: Some new point p_i is encountered on L
@@ -59,3 +58,5 @@ http://cs.nyu.edu/yap/bks/egc/09/7Vor.pdf
 http://www.cs.sfu.ca/~binay/813.2011/Fortune.pdf
 https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-854j-advanced-algorithms-fall-2008/lecture-notes/lec23.pdf
 http://www.raymondhill.net/voronoi/rhill-voronoi.html
+http://www.cs.wustl.edu/~pless/546/lectures/L14.html
+http://www.kmschaal.de/Diplomarbeit_KevinSchaal.pdf

@@ -25,3 +25,16 @@ double Point::slope(Point* a, Point* b) {
     }
 }
 
+bool Point::operator<(const Point& p) const {
+    return (this->y < p.y) || ((this->y  == p.y) && (this->x < p.x));
+}
+
+bool Point::operator==(const Point& p) const {
+    return (this->x == p.x) && (this->y == p.y);
+}
+
+bool Point::onBound(const Point* min, const Point* max) {
+    return this->x == min->x || this->x == max->x
+        || this->y == min->y || this->y == max->y;
+}
+
