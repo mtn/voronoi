@@ -48,6 +48,8 @@ struct CompareEvent {
 // invariant.
 typedef std::pair<const Point*,const Point*> Breakpoint;
 
+double computeIntersection(Breakpoint& b, double sweeplineY);
+
 
 #endif /* VORONOI_H */
 

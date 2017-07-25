@@ -2,7 +2,6 @@
 #include "lib/point.h"
 #include "lib/circle.h"
 #include "lib/voronoi.h"
-#include "lib/halfedge.h"
 
 #include <iostream>
 #include <fstream>
@@ -58,6 +57,9 @@ int main(int argc, char** argv) {
         boundX = boundY = 1;
 
     }
+
+    Breakpoint b = std::make_pair(new Point(2,1),new Point(3,2));
+    cout << computeIntersection(b,0.5) << endl;
 
     /* CircleEvent* ce = new CircleEvent; */
     /* ce->c = new Circle(new Point(0.5,0.5),0.5); */

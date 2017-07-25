@@ -19,7 +19,18 @@ double getEventPriority(const Event* e) {
 // to resolve programatically. Rather, I find the parabolas defined by each focus-and-directrix
 // and solve a quadratic equation to compute their intersection.
 // Note that each point in the breakpoint pair is the focus of a parabola.
-double computeIntersection(Breakpoint& b, double y) {
+double computeIntersection(Breakpoint& b, double sweeplineY) {
+    double ay = std::get<0>(b)->y - sweeplineY;
+    double bx = std::get<1>(b)->x - std::get<0>(b)->x;
+    double by = std::get<1>(b)->y - sweeplineY;
 
+    if(ay == by) {
+        return (std::get<0>(b)->x + std::get<1>(b)->x) / 2;
+    }
+
+    double shiftedIntersect = (ay*bx - sqrt(ay*by*(pow(ay-by,2) + pow(bx,2))))/(ay-by);
+
+    return shiftedIntersect + std::get<0>(b)->x;
 }
+
 
