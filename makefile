@@ -1,5 +1,5 @@
 CC = g++
-CXXFLAGS  = -Wall
+CXXFLAGS  = -Wall -framework sdl2
 
 src = $(wildcard src/*.cpp)
 obj = $(src:.cpp=.o)

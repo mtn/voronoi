@@ -20,6 +20,13 @@ double getEventPriority(const Event* e) {
 // and solve a quadratic equation to compute their intersection.
 // Note that each point in the breakpoint pair is the focus of a parabola.
 double computeIntersection(Breakpoint& b, double sweeplineY) {
+    if(std::get<0>(b)->y == sweeplineY) {
+        return std::get<0>(b)->x;
+    }
+    if (std::get<1>(b)->y == sweeplineY) {
+        return std::get<1>(b)->x;
+    }
+
     double ay = std::get<0>(b)->y - sweeplineY;
     double bx = std::get<1>(b)->x - std::get<0>(b)->x;
     double by = std::get<1>(b)->y - sweeplineY;
@@ -28,8 +35,10 @@ double computeIntersection(Breakpoint& b, double sweeplineY) {
         return (std::get<0>(b)->x + std::get<1>(b)->x) / 2;
     }
 
+
     double shiftedIntersect = (ay*bx - sqrt(ay*by*(pow(ay-by,2) + pow(bx,2))))/(ay-by);
 
+    // TODO handle problem case of small denominators
     return shiftedIntersect + std::get<0>(b)->x;
 }
 
