@@ -2,6 +2,7 @@
 #include "lib/point.h"
 #include "lib/circle.h"
 #include "lib/voronoi.h"
+#include "lib/dcel.h"
 
 #include <iostream>
 #include <fstream>
