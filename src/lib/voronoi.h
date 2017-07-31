@@ -49,6 +49,8 @@ struct CompareEvent {
 typedef std::pair<const Point*,const Point*> Breakpoint;
 
 double computeIntersection(Breakpoint& b, double sweeplineY);
+void handleCircleEvent(CircleEvent* ce);
+void handleSiteEvent(PointEvent* pe);
 
 
 #endif /* VORONOI_H */

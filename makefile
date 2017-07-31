@@ -1,11 +1,12 @@
 CC = g++
-CXXFLAGS  = -Wall -framework sdl2
+CXXFLAGS  = -Wall
+FRAMEWORK = -framework sdl2
 
 src = $(wildcard src/*.cpp)
 obj = $(src:.cpp=.o)
 
 thiessen: $(obj)
-	$(CC) -o $@ $^ $(CXXFLAGS)
+	$(CC) -o $@ $^ $(CXXFLAGS) $(FRAMEWORK)
 
 .PHONY: clean
 clean:

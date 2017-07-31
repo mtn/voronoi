@@ -3,6 +3,7 @@
 #include "lib/circle.h"
 #include "lib/voronoi.h"
 #include "lib/dcel.h"
+#include "lib/graphics.h"
 
 #include <iostream>
 #include <fstream>
@@ -13,8 +14,6 @@
 #include <utility>
 #include <queue>
 #include <set>
-
-#include <SDL2/SDL.h>
 
 using namespace std;
 
@@ -30,6 +29,7 @@ template<typename T> void print_queue(T& q) {
     }
     std::cout << '\n';
 }
+
 
 int main(int argc, char** argv) {
 
@@ -60,6 +60,18 @@ int main(int argc, char** argv) {
         boundX = boundY = 1;
 
     }
+
+    Graphics* g = new Graphics;
+    if(!g->init()) {
+        cout << "Graphics initialization failed!" << endl;
+    }
+
+    g->close();
+
+
+
+
+
 
     /* Breakpoint b1 = std::make_pair(new Point(2,1),new Point(3,2)); */
     /* Breakpoint b2 = std::make_pair(new Point(3,2),new Point(2,1)); */

@@ -6,6 +6,10 @@ Voronoi is a readable, easy-to-use library for generating voronoi diagrams.
 
 * [SDL2](https://www.libsdl.org/download-2.0.php)
 
+## Sources
+
+TODO
+
 ## Contributors
 
 * Michael Noronha (mtn)

@@ -31,15 +31,20 @@ double computeIntersection(Breakpoint& b, double sweeplineY) {
     double bx = std::get<1>(b)->x - std::get<0>(b)->x;
     double by = std::get<1>(b)->y - sweeplineY;
 
-    if(ay == by) {
-        return (std::get<0>(b)->x + std::get<1>(b)->x) / 2;
+    if(ay == by) { return (std::get<0>(b)->x + std::get<1>(b)->x) / 2;
     }
 
 
-    double shiftedIntersect = (ay*bx - sqrt(ay*by*(pow(ay-by,2) + pow(bx,2))))/(ay-by);
+    double shiftedIntersect = (ay*bx + sqrt(ay*by*(pow(ay-by,2) + pow(bx,2))))/(ay-by);
 
     // TODO handle problem case of small denominators
     return shiftedIntersect + std::get<0>(b)->x;
 }
 
+void handleCircleEvent(CircleEvent* ce) {
+    
+}
 
+void handlePointEvent(PointEvent* pe) {
+
+}

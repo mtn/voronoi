@@ -1,7 +1,7 @@
-// Based on http://www.flipcode.com/archives/The_Half-Edge_Data_Structure.shtml
-
 #ifndef DCEL_H
 #define DCEL_H
+
+#include "point.h"
 
 enum Color { Green, Blue, Red, Yellow };
 
@@ -13,13 +13,14 @@ struct vert {
 };
 
 struct edge {
-    struct vert* vert;
-    struct face* face;
-    struct edge* pair;
-    struct edge* next;
+    struct vert* vert; // vertex the edge emanates from
+    struct face* face; // possibly null
+
+    struct edge* sibling;
+    struct edge* next; // clockwise next
 };
 
-struct  face {
+struct face {
     struct edge* edge;
     Color c;
 };
@@ -27,7 +28,6 @@ struct  face {
 typedef struct vert DCEL_Vert;
 typedef struct edge DCEL_Edge;
 typedef struct face DCEL_Face;
-
 
 
 
