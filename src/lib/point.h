@@ -1,5 +1,4 @@
-#ifndef POINT_H
-#define POINT_H
+#pragma once
 
 class Line;
 
@@ -30,6 +29,4 @@ struct ComparePoint {
             : (p1->x < p2->x);
     }
 };
-
-#endif /* POINT_H */
 

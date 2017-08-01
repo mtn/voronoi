@@ -42,9 +42,27 @@ double computeIntersection(Breakpoint& b, double sweeplineY) {
 }
 
 void handleCircleEvent(CircleEvent* ce) {
-    
-}
-
-void handlePointEvent(PointEvent* pe) {
 
 }
+
+void handleSiteEvent(PointEvent* pe) {
+
+}
+
+TNode::TNode(Breakpoint* b, DCEL_Edge* e) {
+    this->deletedLeft = false;
+    this->deletedRight = false;
+    this->breakpoint = b;
+    this->edge = e;
+}
+
+// Used only in the first case (add a single leaf)
+TNode::TNode() {
+    this->deletedLeft = false;
+    this->deletedRight = false;
+    this->breakpoint = nullptr;
+    this->edge = nullptr;
+    this->left = nullptr;
+    this->right = nullptr;
+}
+

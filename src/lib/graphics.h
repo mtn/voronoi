@@ -1,8 +1,8 @@
 // Based on lazyfoo tutorial
 
-#include <SDL2/SDL.h>
-
 #pragma once
+
+#include <SDL2/SDL.h>
 
 const int SCREEN_HEIGHT = 480;
 const int SCREEN_WIDTH = 600;

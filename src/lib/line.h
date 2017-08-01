@@ -1,5 +1,4 @@
-#ifndef LINE_H
-#define LINE_H
+#pragma once
 
 #include "point.h"
 
@@ -20,5 +19,4 @@ class Line {
 
 };
 
-#endif /* LINE_H */
 

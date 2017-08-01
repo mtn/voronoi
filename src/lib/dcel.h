@@ -1,5 +1,4 @@
-#ifndef DCEL_H
-#define DCEL_H
+#pragma once
 
 #include "point.h"
 
@@ -29,6 +28,3 @@ typedef struct vert DCEL_Vert;
 typedef struct edge DCEL_Edge;
 typedef struct face DCEL_Face;
 
-
-
-#endif /* DCEL_H */

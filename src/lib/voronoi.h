@@ -1,7 +1,6 @@
 // Defines internal representation of Voronoi Diagram
 
-#ifndef VORONOI_H
-#define VORONOI_H
+#pragma once
 
 #include "point.h"
 #include "circle.h"
@@ -47,19 +46,29 @@ struct CompareEvent {
 
 typedef std::pair<const Point*,const Point*> Breakpoint;
 typedef struct TNode {
-    Breakpoint* b;
-    DCEL_Edge* edge; // The voronoi edge the breakpont is tracing out
+    bool deletedLeft; // Probably temporary; will test alternate method later
+    bool deletedRight;
+
+    Breakpoint* breakpoint;
+    DCEL_Edge* edge; // The voronoi edge the breakpoint is tracing out
 
     // The circle events when the left and right arcs will disappear are store
     // Thus, prev.right should agree with this.left, etc.
     CircleEvent* left; // Could be nil
     CircleEvent* right;
+
+    TNode(); // Intended only for the initial insertion
+    TNode(Breakpoint* b, DCEL_Edge* e);
 } TNode;
+
+// TNodes are compared by their breakpoints
+struct CompareTNode {
+    bool operator()(const TNode* t1, const TNode* t2) const {
+        return t1->breakpoint != t2->breakpoint;
+    }
+};
 
 double computeIntersection(Breakpoint& b, double sweeplineY);
 void handleCircleEvent(CircleEvent* ce);
 void handleSiteEvent(PointEvent* pe);
-
-
-#endif /* VORONOI_H */
 

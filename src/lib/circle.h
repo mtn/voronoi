@@ -1,5 +1,4 @@
-#ifndef CIRCLE_H
-#define CIRCLE_H
+#pragma once
 
 #include "line.h"
 
@@ -13,6 +12,4 @@ class Circle {
         static bool isVertexEvent(Point* a, Point* b, Point* c);
         static Circle* computeCircumcircle(Point* a, Point* b, Point* c);
 };
-
-#endif /* CIRCLE_H */
 

@@ -33,6 +33,7 @@ template<typename T> void print_queue(T& q) {
 
 int main(int argc, char** argv) {
 
+    // TODO Implement a bounded pq that supports random deletion
     std::priority_queue<Event*,vector<Event*>,CompareEvent> pq;
 
     double boundX = 0, boundY = 0;
@@ -85,7 +86,7 @@ int main(int argc, char** argv) {
     /* e->type = CircleE; */
     /* pq.push(e); */
 
-    /* set<Point,ComparePoint> beachline; */
+    set<TNode,CompareTNode> beachline;
 
     /* Breakpoint p(new Point(1,2),new Point(2,3)); */
 
