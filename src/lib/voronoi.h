@@ -12,24 +12,26 @@ enum EventType       { CircleE, PointE };
 enum CompareResult   { GreaterThan, EqualTo, LessThan };
 
 
-struct TNode;
+class BLNode;
 typedef struct {
+    bool deleted;
+
     Point* p1;
     Point* p2;
     Point* p3;
 
     Circle* c;
-    struct TNode* node;
+    BLNode* node;
 } CircleEvent;
 
-typedef Point PointEvent;
+typedef Point SiteEvent;
 
 typedef struct {
     EventType type;
 
     // One of these will be null
     CircleEvent* ce;
-    PointEvent* pe;
+    SiteEvent* pe;
 } Event;
 
 // Event priority is simply a y value, determining when an event
@@ -45,30 +47,48 @@ struct CompareEvent {
 
 
 typedef std::pair<const Point*,const Point*> Breakpoint;
-typedef struct TNode {
-    bool deletedLeft; // Probably temporary; will test alternate method later
-    bool deletedRight;
+class BLNode {
+    public:
+        void setBreakpoint(Breakpoint* bp);
+        Breakpoint* getBreakpoint();
 
-    Breakpoint* breakpoint;
-    DCEL_Edge* edge; // The voronoi edge the breakpoint is tracing out
+        void setEdge(DCEL_Edge* edge);
+        DCEL_Edge* getEdge();
 
-    // The circle events when the left and right arcs will disappear are store
-    // Thus, prev.right should agree with this.left, etc.
-    CircleEvent* left; // Could be nil
-    CircleEvent* right;
+        void setLeft(CircleEvent* left);
+        CircleEvent* getLeft();
+        void setRight(CircleEvent* right);
+        CircleEvent* getRight();
 
-    TNode(); // Intended only for the initial insertion
-    TNode(Breakpoint* b, DCEL_Edge* e);
-} TNode;
+        Point* getPoint();
 
-// TNodes are compared by their breakpoints
-struct CompareTNode {
-    bool operator()(const TNode* t1, const TNode* t2) const {
-        return t1->breakpoint != t2->breakpoint;
+
+    private:
+        // TODO use unions to enforce that only one can exist
+
+        Point* p;
+
+        Breakpoint* breakpoint;
+        DCEL_Edge* edge; // The voronoi edge the breakpoint is tracing out
+
+        // The circle events when the left and right arcs will disappear are store
+        // Thus, prev.right should agree with this.left, etc.
+        CircleEvent* left; // Could be null
+        CircleEvent* right;
+
+
+    BLNode(Point* p); // Intended only for the initial insertion
+    BLNode(Breakpoint* b, DCEL_Edge* e);
+
+};
+
+// BLNodes are compared by their breakpoints
+struct CompareBLNode {
+    bool operator()(const BLNode* b1, const BLNode* b2) const {
+
     }
 };
 
 double computeIntersection(Breakpoint& b, double sweeplineY);
 void handleCircleEvent(CircleEvent* ce);
-void handleSiteEvent(PointEvent* pe);
-
+void handleSiteEvent(SiteEvent* pe);

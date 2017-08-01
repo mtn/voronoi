@@ -14,11 +14,6 @@ double getEventPriority(const Event* e) {
 }
 
 
-// Analytically, this reduces to problem of finding center of circle defined by 2 points
-// and a tangent line. However, the resulting quadratic system of equations is difficult
-// to resolve programatically. Rather, I find the parabolas defined by each focus-and-directrix
-// and solve a quadratic equation to compute their intersection.
-// Note that each point in the breakpoint pair is the focus of a parabola.
 double computeIntersection(Breakpoint& b, double sweeplineY) {
     if(std::get<0>(b)->y == sweeplineY) {
         return std::get<0>(b)->x;
@@ -34,35 +29,68 @@ double computeIntersection(Breakpoint& b, double sweeplineY) {
     if(ay == by) { return (std::get<0>(b)->x + std::get<1>(b)->x) / 2;
     }
 
-
     double shiftedIntersect = (ay*bx + sqrt(ay*by*(pow(ay-by,2) + pow(bx,2))))/(ay-by);
 
     // TODO handle problem case of small denominators
     return shiftedIntersect + std::get<0>(b)->x;
 }
 
+
+void handleSiteEvent(SiteEvent* pe) {
+
+}
+
 void handleCircleEvent(CircleEvent* ce) {
 
 }
 
-void handleSiteEvent(PointEvent* pe) {
 
-}
-
-TNode::TNode(Breakpoint* b, DCEL_Edge* e) {
-    this->deletedLeft = false;
-    this->deletedRight = false;
+BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) {
+    this->p = nullptr;
     this->breakpoint = b;
     this->edge = e;
+    this->left = nullptr;
+    this->right = nullptr;
 }
 
 // Used only in the first case (add a single leaf)
-TNode::TNode() {
-    this->deletedLeft = false;
-    this->deletedRight = false;
+BLNode::BLNode(Point* p) {
+    this->p = p;
     this->breakpoint = nullptr;
     this->edge = nullptr;
     this->left = nullptr;
     this->right = nullptr;
 }
 
+void BLNode::setBreakpoint(Breakpoint* bp) {
+    this->p = nullptr;
+    this->breakpoint = bp;
+}
+Breakpoint* BLNode::getBreakpoint() {
+    return this->breakpoint;
+}
+
+void BLNode::setEdge(DCEL_Edge* edge) {
+    this->edge = edge;
+}
+DCEL_Edge* BLNode::getEdge() {
+    return this->edge;
+}
+
+void BLNode::setLeft(CircleEvent* left) {
+    this->left = left;
+}
+CircleEvent* BLNode::getLeft() {
+    return this->left;
+}
+
+void BLNode::setRight(CircleEvent* right) {
+    this->right = right;
+}
+CircleEvent* BLNode::getRight() {
+    return this->right;
+}
+
+Point* BLNode::getPoint() {
+    return this->p;
+}

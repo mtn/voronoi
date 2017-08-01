@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
     /* e->type = CircleE; */
     /* pq.push(e); */
 
-    set<TNode,CompareTNode> beachline;
+    set<BLNode,CompareBLNode> beachline;
 
     /* Breakpoint p(new Point(1,2),new Point(2,3)); */
 
