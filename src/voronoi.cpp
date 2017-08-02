@@ -7,7 +7,7 @@
 
 double getEventPriority(const Event* e) {
     if(e->type == PointE) {
-        return e->pe->y;
+        return e->se->y;
     } else {
         return e->ce->c->center->y + e->ce->c->radius;
     }
@@ -46,7 +46,7 @@ double computeIntersection(BLNode* b, double sweeplineY) {
 }
 
 
-void handleSiteEvent(SiteEvent* pe) {
+void handleSiteEvent(SiteEvent* se) {
 
 
 }
@@ -62,6 +62,12 @@ BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) {
     this->edge = e;
     this->left = nullptr;
     this->right = nullptr;
+}
+
+BLNode::BLNode(Breakpoint* b) {
+    this->p = nullptr;
+    this->breakpoint = b;
+    this->edge = new DCEL_Edge;
 }
 
 // Used only in the first case (add a single leaf)

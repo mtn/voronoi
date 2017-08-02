@@ -22,7 +22,7 @@ double sweeplineY; // This might only be safe to update on sevents and after cev
 template<typename T> void print_queue(T& q) {
     while(!q.empty()) {
         if(q.top()->type == PointE)
-            std::cout << q.top()->pe->x << "," <<  q.top()->pe->y << endl;
+            std::cout << q.top()->se->x << "," <<  q.top()->se->y << endl;
         else
             std::cout << "circleevent" << endl;
 
@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 
             tmp = new Event;
             tmp->type = PointE;
-            tmp->pe = new Point(a,b);
+            tmp->se = new Point(a,b);
 
             pq.push(tmp);
         }
@@ -63,17 +63,39 @@ int main(int argc, char** argv) {
 
     }
 
-    Graphics* g = new Graphics;
-    if(!g->init()) {
-        cout << "Graphics initialization failed!" << endl;
-    }
+    /* Graphics* g = new Graphics; */
+    /* if(!g->init()) { */
+    /*     cout << "Graphics initialization failed!" << endl; */
+    /* } */
 
-    g->close();
+    /* g->close(); */
 
-
-
+    // To work around the first insertion edgecase, the first breakpoint is manually
+    // constructed and then inserted into the set
+    bool first = true;
     std::set<BLNode,CompareBLNode> beachline;
+    Event *e1, *e2;
+    BLNode* node;
+    Breakpoint* bp;
+    while(!pq.empty()) {
+        e1 = pq.top();
+        pq.pop();
+        if(first) {
+            e2 = pq.top();
+            pq.pop();
 
+            // A circle event cannot occur within the first two events, so we don't
+            // have to check event types
+            *bp = make_pair(e1->se,e2->se);
+            node = new BLNode(bp);
+
+
+            first = false;
+        }
+
+
+        e2 = nullptr;
+    }
 
 
     /* Breakpoint b1 = std::make_pair(new Point(2,1),new Point(3,2)); */

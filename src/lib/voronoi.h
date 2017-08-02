@@ -13,7 +13,6 @@
 #include <queue>
 
 enum EventType       { CircleE, PointE };
-enum CompareResult   { GreaterThan, EqualTo, LessThan };
 
 extern double sweeplineY;
 
@@ -37,7 +36,7 @@ typedef struct {
 
     // One of these will be null
     CircleEvent* ce;
-    SiteEvent* pe;
+    SiteEvent* se;
 } Event;
 
 // Event priority is simply a y value, determining when an event
@@ -56,6 +55,7 @@ typedef std::pair<const Point*,const Point*> Breakpoint;
 class BLNode {
     public:
         BLNode(Point* p); // Intended only for the initial insertion
+        BLNode(Breakpoint* b);
         BLNode(Breakpoint* b, DCEL_Edge* e);
 
         void setBreakpoint(Breakpoint* bp);
@@ -94,8 +94,7 @@ void handleSiteEvent(SiteEvent* pe);
 // BLNodes are compared by their breakpoints
 struct CompareBLNode {
     bool operator()(const BLNode* b1, const BLNode* b2) const {
-        return computeIntersection(b1,sweeplineY)
-                <= computeIntersection(b2,sweeplineY);
+        return computeIntersection(b1,sweeplineY) <= computeIntersection(b2,sweeplineY);
     }
 };
 
