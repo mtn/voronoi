@@ -15,6 +15,8 @@
 enum EventType       { CircleE, PointE };
 enum CompareResult   { GreaterThan, EqualTo, LessThan };
 
+extern double sweeplineY;
+
 
 class BLNode;
 typedef struct {
@@ -90,20 +92,11 @@ void handleCircleEvent(CircleEvent* ce);
 void handleSiteEvent(SiteEvent* pe);
 
 // BLNodes are compared by their breakpoints
-class VState {
-    public:
-        static double sweeplineY; // this must be manually updated when appropriate
-
-        struct CompareBLNode {
-            bool operator()(const BLNode* b1, const BLNode* b2) const {
-                return computeIntersection(b1,VState::sweeplineY)
-                        <= computeIntersection(b2,VState::sweeplineY);
-            }
-        };
-
-        std::set<BLNode,VState::CompareBLNode> beachline;
-        std::priority_queue<Event*,std::vector<Event*>,CompareEvent> pq;
-
+struct CompareBLNode {
+    bool operator()(const BLNode* b1, const BLNode* b2) const {
+        return computeIntersection(b1,sweeplineY)
+                <= computeIntersection(b2,sweeplineY);
+    }
 };
 
 
