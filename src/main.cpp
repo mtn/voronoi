@@ -17,6 +17,7 @@
 
 using namespace std;
 
+double sweeplineY; // This might only be safe to update on sevents and after cevents
 
 template<typename T> void print_queue(T& q) {
     while(!q.empty()) {

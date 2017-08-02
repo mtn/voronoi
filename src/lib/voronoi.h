@@ -49,6 +49,9 @@ struct CompareEvent {
 typedef std::pair<const Point*,const Point*> Breakpoint;
 class BLNode {
     public:
+        BLNode(Point* p); // Intended only for the initial insertion
+        BLNode(Breakpoint* b, DCEL_Edge* e);
+
         void setBreakpoint(Breakpoint* bp);
         Breakpoint* getBreakpoint();
 
@@ -62,9 +65,8 @@ class BLNode {
 
         Point* getPoint();
 
-
     private:
-        // TODO use unions to enforce that only one can exist
+        // TODO use unions to enforce that nothing can exist simultaneously with a point
 
         Point* p;
 
@@ -76,19 +78,20 @@ class BLNode {
         CircleEvent* left; // Could be null
         CircleEvent* right;
 
-
-    BLNode(Point* p); // Intended only for the initial insertion
-    BLNode(Breakpoint* b, DCEL_Edge* e);
-
 };
+
+
+double computeIntersection(const BLNode* b, double sweeplineY);
+void handleCircleEvent(CircleEvent* ce);
+void handleSiteEvent(SiteEvent* pe);
 
 // BLNodes are compared by their breakpoints
 struct CompareBLNode {
     bool operator()(const BLNode* b1, const BLNode* b2) const {
-
+        return computeIntersection(b1,sweeplineY) <= computeIntersection(b2,sweeplineY);
     }
+    double sweeplineY; // this must be manually updated when appropriate
 };
 
-double computeIntersection(Breakpoint& b, double sweeplineY);
-void handleCircleEvent(CircleEvent* ce);
-void handleSiteEvent(SiteEvent* pe);
+
+

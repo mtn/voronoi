@@ -14,25 +14,35 @@ double getEventPriority(const Event* e) {
 }
 
 
-double computeIntersection(Breakpoint& b, double sweeplineY) {
-    if(std::get<0>(b)->y == sweeplineY) {
-        return std::get<0>(b)->x;
-    }
-    if (std::get<1>(b)->y == sweeplineY) {
-        return std::get<1>(b)->x;
+double computeIntersection(BLNode* b, double sweeplineY) {
+
+    // As a hack to get site event insertion of points to work, and to allow insertion of
+    // two breakpoints that appear to be at the same location, points are shited slightly
+    Point* p;
+    if((p = b->getPoint())) {
+        return p->x + 0.00001;
     }
 
-    double ay = std::get<0>(b)->y - sweeplineY;
-    double bx = std::get<1>(b)->x - std::get<0>(b)->x;
-    double by = std::get<1>(b)->y - sweeplineY;
+    if(std::get<0>(*b->getBreakpoint())->y == sweeplineY) {
+        return std::get<0>(*b->getBreakpoint())->x;
+    }
+    if (std::get<1>(*b->getBreakpoint())->y == sweeplineY) {
+        return std::get<1>(*b->getBreakpoint())->x;
+    }
 
-    if(ay == by) { return (std::get<0>(b)->x + std::get<1>(b)->x) / 2;
+    double ay = std::get<0>(*b->getBreakpoint())->y - sweeplineY;
+    double bx = std::get<1>(*b->getBreakpoint())->x - std::get<0>(*b->getBreakpoint())->x;
+    double by = std::get<1>(*b->getBreakpoint())->y - sweeplineY;
+
+    if(ay == by) {
+        return (std::get<0>(*b->getBreakpoint())->x + std::get<1>(*b->getBreakpoint())->x) / 2;
     }
 
     double shiftedIntersect = (ay*bx + sqrt(ay*by*(pow(ay-by,2) + pow(bx,2))))/(ay-by);
 
     // TODO handle problem case of small denominators
-    return shiftedIntersect + std::get<0>(b)->x;
+
+    return shiftedIntersect + std::get<0>(*b->getBreakpoint())->x;
 }
 
 
@@ -94,3 +104,4 @@ CircleEvent* BLNode::getRight() {
 Point* BLNode::getPoint() {
     return this->p;
 }
+
