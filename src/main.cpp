@@ -73,61 +73,34 @@ int main(int argc, char** argv) {
     // To work around the first insertion edgecase, the first breakpoint is manually
     // constructed and then inserted into the set
     bool first = true;
-    std::set<BLNode*,CompareBLNode> beachline;
+    int count = 0;
+    BLSet beachline;
     Beachline* bl = new Beachline;
     Event *e1, *e2;
-    BLNode *node;
-    DCEL_Face* face;
-    DCEL_Edge edge;
-    Breakpoint* bp;
     while(!pq.empty()) {
         e1 = pq.top();
         pq.pop();
-        if(first) {
+        if(count < 2) {
             // TODO handle degenerate case where the first two sites have the same y
             e2 = pq.top();
             pq.pop();
 
             // A circle event cannot occur within the first two events, so we don't
             // have to check event types
+            bl->insertBreakpoint(e1,e2);
+            bl->insertBreakpoint(e2,e1);
 
-            bp = new Breakpoint;
-            *bp = make_pair(e1->se,e2->se);
-            node = new BLNode(bp);
-
-            DCEL_Face* face = new DCEL_Face;
-            DCEL_Edge* e = new DCEL_Edge;
-
-            face->edge = e;
-            e->sibling = new DCEL_Edge;
-            e->sibling->sibling = e;
-
-            node->setEdge(e);
-            beachline.insert(node);
-
-            bp = new Breakpoint;
-            *bp = make_pair(e2->se,e1->se);
-            node = new BLNode(bp);
-
-            face = new DCEL_Face;
-            e = new DCEL_Edge;
-
-            face->edge = e;
-            e->sibling = new DCEL_Edge;
-            e->sibling->sibling = e;
-
-            node->setEdge(e);
-
-
-
-
-            first = false;
+            count++;
+            /* first = false; */
         }
-
-        node = new BLNode(e1->se);
 
         e2 = nullptr;
     }
+
+    for (BLSet::iterator it=bl->set.begin(); it!=bl->set.end(); ++it)
+        std::cout << ' ' << *it;
+
+
 
 
     /* Breakpoint b1 = std::make_pair(new Point(2,1),new Point(3,2)); */

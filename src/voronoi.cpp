@@ -14,7 +14,7 @@ double getEventPriority(const Event* e) {
 }
 
 
-double computeIntersection(BLNode* b, double sweeplineY) {
+double computeIntersection(const BLNode* b, double sweeplineY) {
 
     // As a hack to get site event insertion of points to work, and to allow insertion of
     // two breakpoints that appear to be at the same location, points are shited slightly
@@ -83,32 +83,56 @@ void BLNode::setBreakpoint(Breakpoint* bp) {
     this->p = nullptr;
     this->breakpoint = bp;
 }
-Breakpoint* BLNode::getBreakpoint() {
+Breakpoint* BLNode::getBreakpoint() const {
     return this->breakpoint;
 }
 
 void BLNode::setEdge(DCEL_Edge* edge) {
     this->edge = edge;
 }
-DCEL_Edge* BLNode::getEdge() {
+DCEL_Edge* BLNode::getEdge() const {
     return this->edge;
 }
 
 void BLNode::setLeft(CircleEvent* left) {
     this->left = left;
 }
-CircleEvent* BLNode::getLeft() {
+CircleEvent* BLNode::getLeft() const {
     return this->left;
 }
 
 void BLNode::setRight(CircleEvent* right) {
     this->right = right;
 }
-CircleEvent* BLNode::getRight() {
+CircleEvent* BLNode::getRight() const {
     return this->right;
 }
 
-Point* BLNode::getPoint() {
+Point* BLNode::getPoint() const {
     return this->p;
+}
+
+
+void Beachline::insertBreakpoint(Event* e1, Event* e2) {
+    Breakpoint* bp;
+    BLNode* node;
+
+    bp = new Breakpoint;
+    *bp = std::make_pair(e1->se,e2->se);
+    node = new BLNode(bp);
+
+    DCEL_Face* face = new DCEL_Face;
+    DCEL_Edge* e = new DCEL_Edge;
+
+    face->edge = e;
+    e->sibling = new DCEL_Edge;
+    e->sibling->sibling = e;
+
+    node->setEdge(e);
+    this->set.insert(node);
+}
+
+void Beachline::insertPoint(Event* e) {
+
 }
 

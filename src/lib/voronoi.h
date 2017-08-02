@@ -57,17 +57,17 @@ class BLNode {
         BLNode(Breakpoint* b, DCEL_Edge* e);
 
         void setBreakpoint(Breakpoint* bp);
-        Breakpoint* getBreakpoint();
+        Breakpoint* getBreakpoint() const;
 
         void setEdge(DCEL_Edge* edge);
-        DCEL_Edge* getEdge();
+        DCEL_Edge* getEdge() const;
 
         void setLeft(CircleEvent* left);
-        CircleEvent* getLeft();
+        CircleEvent* getLeft() const;
         void setRight(CircleEvent* right);
-        CircleEvent* getRight();
+        CircleEvent* getRight() const;
 
-        Point* getPoint();
+        Point* getPoint() const;
 
     private:
         // TODO use unions to enforce that nothing can exist simultaneously with a point
@@ -85,8 +85,6 @@ class BLNode {
 
 
 double computeIntersection(const BLNode* b, double sweeplineY);
-void handleCircleEvent(CircleEvent* ce);
-void handleSiteEvent(SiteEvent* pe);
 
 // BLNodes are compared by their breakpoints
 struct CompareBLNode {
@@ -95,8 +93,15 @@ struct CompareBLNode {
     }
 };
 
+typedef std::set<BLNode*,CompareBLNode> BLSet;
 typedef struct {
-    std::set<BLNode*,CompareBLNode> set;
-    void insertBreakpoints();
+    BLSet set;
+
+    void insertBreakpoint(Event* e1, Event* e2); // Only used for the first insertion
+    void insertPoint(Event* e);
+    // TODO handlesite should check and manage the first case instead of main
+
+    void handleCircleEvent(CircleEvent* ce);
+    void handleSiteEvent(SiteEvent* pe);
 } Beachline;
 
