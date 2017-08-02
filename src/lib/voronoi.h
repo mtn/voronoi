@@ -9,8 +9,6 @@
 
 #include <utility>
 #include <set>
-#include <vector>
-#include <queue>
 
 enum EventType       { CircleE, PointE };
 
@@ -83,7 +81,6 @@ class BLNode {
         // Thus, prev.right should agree with this.left, etc.
         CircleEvent* left; // Could be null
         CircleEvent* right;
-
 };
 
 
@@ -98,5 +95,8 @@ struct CompareBLNode {
     }
 };
 
-
+typedef struct {
+    std::set<BLNode*,CompareBLNode> set;
+    void insertBreakpoints();
+} Beachline;
 
