@@ -48,6 +48,7 @@ double computeIntersection(BLNode* b, double sweeplineY) {
 
 void handleSiteEvent(SiteEvent* pe) {
 
+
 }
 
 void handleCircleEvent(CircleEvent* ce) {

@@ -6,7 +6,11 @@
 #include "circle.h"
 #include "dcel.h"
 
+
 #include <utility>
+#include <set>
+#include <vector>
+#include <queue>
 
 enum EventType       { CircleE, PointE };
 enum CompareResult   { GreaterThan, EqualTo, LessThan };
@@ -86,11 +90,20 @@ void handleCircleEvent(CircleEvent* ce);
 void handleSiteEvent(SiteEvent* pe);
 
 // BLNodes are compared by their breakpoints
-struct CompareBLNode {
-    bool operator()(const BLNode* b1, const BLNode* b2) const {
-        return computeIntersection(b1,sweeplineY) <= computeIntersection(b2,sweeplineY);
-    }
-    double sweeplineY; // this must be manually updated when appropriate
+class VState {
+    public:
+        static double sweeplineY; // this must be manually updated when appropriate
+
+        struct CompareBLNode {
+            bool operator()(const BLNode* b1, const BLNode* b2) const {
+                return computeIntersection(b1,VState::sweeplineY)
+                        <= computeIntersection(b2,VState::sweeplineY);
+            }
+        };
+
+        std::set<BLNode,VState::CompareBLNode> beachline;
+        std::priority_queue<Event*,std::vector<Event*>,CompareEvent> pq;
+
 };
 
 
