@@ -14,17 +14,6 @@ double getEventPriority(const Event* e) {
 
 
 
-
-void handleSiteEvent(SiteEvent* se) {
-
-
-}
-
-void handleCircleEvent(CircleEvent* ce) {
-
-}
-
-
 BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) {
     this->p = nullptr;
     this->breakpoint = b;
@@ -59,52 +48,29 @@ Breakpoint* BLNode::getBreakpoint() const {
 void BLNode::setEdge(DCEL_Edge* edge) {
     this->edge = edge;
 }
+
 DCEL_Edge* BLNode::getEdge() const {
     return this->edge;
 }
 
-void BLNode::setLeft(CircleEvent* left) {
-    this->left = left;
-}
-CircleEvent* BLNode::getLeft() const {
-    return this->left;
+void BLNode::setLEvent(CircleEvent* lEvent) {
+    this->lEvent = lEvent;
 }
 
-void BLNode::setRight(CircleEvent* right) {
-    this->right = right;
+CircleEvent* BLNode::getLEvent() const {
+    return this->lEvent;
 }
-CircleEvent* BLNode::getRight() const {
-    return this->right;
+
+void BLNode::setREvent(CircleEvent* rEvent) {
+    this->rEvent = rEvent;
+}
+
+CircleEvent* BLNode::getREvent() const {
+    return this->rEvent;
 }
 
 Point* BLNode::getPoint() const {
     return this->p;
-}
-
-
-void Beachline::insertBreakpoint(Event* e1, Event* e2) {
-    Breakpoint* bp;
-    BLNode* node;
-
-    sweeplineY = e1->se->y > e2->se->y ? e1->se->y : e2->se->y;
-
-    bp = new Breakpoint;
-    *bp = std::make_pair(e1->se,e2->se);
-    node = new BLNode(bp);
-
-    DCEL_Face* face = new DCEL_Face;
-    DCEL_Edge* e = new DCEL_Edge;
-
-    face->edge = e;
-    e->sibling = new DCEL_Edge;
-    e->sibling->sibling = e;
-
-    node->setEdge(e);
-    this->set.insert(node);
-}
-
-void Beachline::insertPoint(Event* e) {
-
 }
 
 double BLNode::computeIntersection(double sweeplineY) const {
@@ -137,3 +103,55 @@ double BLNode::computeIntersection(double sweeplineY) const {
 
     return shiftedIntersect + std::get<0>(*this->getBreakpoint())->x;
 }
+
+
+
+Beachline::Beachline() {
+    this->root = NULL;
+}
+
+Beachline::Beachline(BLNode* root) {
+    this->root = root;
+}
+
+void Beachline::destroyTree(BLNode* node) {
+    if(node != NULL) {
+        destroyTree(node->lNode);
+        destroyTree(node->rNode);
+        delete node;
+    }
+}
+
+void Beachline::destroyTree() {
+    destroyTree(this->root);
+}
+
+
+
+
+void Beachline::insertBreakpoint(Event* e1, Event* e2) {
+    Breakpoint* bp;
+    BLNode* node;
+
+    sweeplineY = e1->se->y > e2->se->y ? e1->se->y : e2->se->y;
+
+    bp = new Breakpoint;
+    *bp = std::make_pair(e1->se,e2->se);
+    node = new BLNode(bp);
+
+    DCEL_Face* face = new DCEL_Face;
+    DCEL_Edge* e = new DCEL_Edge;
+
+    face->edge = e;
+    e->sibling = new DCEL_Edge;
+    e->sibling->sibling = e;
+
+    node->setEdge(e);
+    this->set.insert(node);
+}
+
+void Beachline::insertPoint(Event* e) {
+
+}
+
+

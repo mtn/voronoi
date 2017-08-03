@@ -64,14 +64,18 @@ class BLNode {
         void setEdge(DCEL_Edge* edge);
         DCEL_Edge* getEdge() const;
 
-        void setLeft(CircleEvent* left);
-        CircleEvent* getLeft() const;
-        void setRight(CircleEvent* right);
-        CircleEvent* getRight() const;
+        void setLEvent(CircleEvent* left);
+        CircleEvent* getLEvent() const;
+        void setREvent(CircleEvent* right);
+        CircleEvent* getREvent() const;
 
         Point* getPoint() const;
 
         double computeIntersection(double sweeplineY) const;
+
+        // Left and right nodes in the RB tree
+        BLNode* lNode;
+        BLNode* rNode;
 
     private:
         // TODO use unions to enforce that nothing can exist simultaneously with a point
@@ -83,9 +87,13 @@ class BLNode {
 
         // The circle events when the left and right arcs will disappear are store
         // Thus, prev.right should agree with this.left, etc.
-        CircleEvent* left; // Could be null
-        CircleEvent* right;
+        CircleEvent* lEvent; // Could be null
+        CircleEvent* rEvent;
+
 };
+
+/* Defines a modified RB tree that supports dynamic keys (which is fine here * because the order of parabolas along the beachline being encoded is
+ * invariant). */
 
 // BLNodes are compared by their breakpoints
 struct CompareBLNode {
@@ -99,15 +107,29 @@ struct CompareBLNode {
     }
 };
 
-typedef std::set<BLNode*,CompareBLNode> BLSet;
-typedef struct {
-    BLSet set;
+class Beachline {
+    public:
+        Beachline();
+        Beachline(BLNode* root);
+        ~Beachline();
 
-    void insertBreakpoint(Event* e1, Event* e2); // Only used for the first insertion
-    void insertPoint(Event* e);
-    // TODO handlesite should check and manage the first case instead of main
+        void insert(Point* p);
+        void insert(Breakpoint* bp);
+        void destroyTree();
 
-    void handleCircleEvent(CircleEvent* ce);
-    void handleSiteEvent(SiteEvent* pe);
-} Beachline;
+        void insertBreakpoint(Event* e1, Event* e2); // Only used for the first insertion
+        void insertPoint(Event* e);
+        // TODO handlesite should check and manage the first case instead of main
+
+        void handleCircleEvent(CircleEvent* ce);
+        void handleSiteEvent(SiteEvent* pe);
+
+    private:
+        void destroyTree(BLNode* node);
+        void insert(Point* p, BLNode* node);
+        void insert(Breakpoint* bp, BLNode* node);
+
+        BLNode* root;
+};
+
 
