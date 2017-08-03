@@ -4,7 +4,6 @@
 #include <cstddef>
 #include <cmath>
 
-
 double getEventPriority(const Event* e) {
     if(e->type == PointE) {
         return e->se->y;
@@ -14,35 +13,35 @@ double getEventPriority(const Event* e) {
 }
 
 
-double computeIntersection(const BLNode* b, double sweeplineY) {
+double BLNode::computeIntersection(double sweeplineY) const {
 
     // As a hack to get site event insertion of points to work, and to allow insertion of
     // two breakpoints that appear to be at the same location, points are shited slightly
     Point* p;
-    if((p = b->getPoint())) {
+    if((p = this->getPoint())) {
         return p->x + 0.00001;
     }
 
-    if(std::get<0>(*b->getBreakpoint())->y == sweeplineY) {
-        return std::get<0>(*b->getBreakpoint())->x;
+    if(std::get<0>(*this->getBreakpoint())->y == sweeplineY) {
+        return std::get<0>(*this->getBreakpoint())->x;
     }
-    if (std::get<1>(*b->getBreakpoint())->y == sweeplineY) {
-        return std::get<1>(*b->getBreakpoint())->x;
+    if (std::get<1>(*this->getBreakpoint())->y == sweeplineY) {
+        return std::get<1>(*this->getBreakpoint())->x;
     }
 
-    double ay = std::get<0>(*b->getBreakpoint())->y - sweeplineY;
-    double bx = std::get<1>(*b->getBreakpoint())->x - std::get<0>(*b->getBreakpoint())->x;
-    double by = std::get<1>(*b->getBreakpoint())->y - sweeplineY;
+    double ay = std::get<0>(*this->getBreakpoint())->y - sweeplineY;
+    double bx = std::get<1>(*this->getBreakpoint())->x - std::get<0>(*this->getBreakpoint())->x;
+    double by = std::get<1>(*this->getBreakpoint())->y - sweeplineY;
 
     if(ay == by) {
-        return (std::get<0>(*b->getBreakpoint())->x + std::get<1>(*b->getBreakpoint())->x) / 2;
+        return (std::get<0>(*this->getBreakpoint())->x + std::get<1>(*this->getBreakpoint())->x) / 2;
     }
 
     double shiftedIntersect = (ay*bx + sqrt(ay*by*(pow(ay-by,2) + pow(bx,2))))/(ay-by);
 
     // TODO handle problem case of small denominators
 
-    return shiftedIntersect + std::get<0>(*b->getBreakpoint())->x;
+    return shiftedIntersect + std::get<0>(*this->getBreakpoint())->x;
 }
 
 
@@ -130,6 +129,8 @@ void Beachline::insertBreakpoint(Event* e1, Event* e2) {
 
     node->setEdge(e);
     this->set.insert(node);
+
+    sweeplineY = e1->se->y > e2->se->y ? e1->se->y : e2->se->y;
 }
 
 void Beachline::insertPoint(Event* e) {

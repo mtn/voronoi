@@ -69,6 +69,8 @@ class BLNode {
 
         Point* getPoint() const;
 
+        double computeIntersection(double sweeplineY) const;
+
     private:
         // TODO use unions to enforce that nothing can exist simultaneously with a point
 
@@ -83,13 +85,11 @@ class BLNode {
         CircleEvent* right;
 };
 
-
-double computeIntersection(const BLNode* b, double sweeplineY);
-
 // BLNodes are compared by their breakpoints
 struct CompareBLNode {
     bool operator()(const BLNode* b1, const BLNode* b2) const {
-        return computeIntersection(b1,sweeplineY) <= computeIntersection(b2,sweeplineY);
+        return b1->computeIntersection(sweeplineY)
+            <= b2->computeIntersection(sweeplineY);
     }
 };
 

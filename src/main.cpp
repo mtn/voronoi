@@ -15,6 +15,15 @@
 #include <queue>
 #include <set>
 
+#include <stdio.h>
+
+#define DEBUG
+#ifdef DEBUG
+# define DEBUG_PRINT(x) printf(x)
+#else
+# define DEBUG_PRINT(x) do {} while (0)
+#endif
+
 using namespace std;
 
 double sweeplineY; // This might only be safe to update on sevents and after cevents
@@ -27,13 +36,13 @@ template<typename T> void print_queue(T& q) {
             std::cout << "circleevent" << endl;
 
         q.pop();
-    }
+
     std::cout << '\n';
+    }
 }
 
 
 int main(int argc, char** argv) {
-
     // TODO Implement a bounded pq that supports random deletion
     std::priority_queue<Event*,std::vector<Event*>,CompareEvent> pq;
 
@@ -72,15 +81,14 @@ int main(int argc, char** argv) {
 
     // To work around the first insertion edgecase, the first breakpoint is manually
     // constructed and then inserted into the set
-    bool first = true;
-    int count = 0;
+    /* bool first = true; */
     BLSet beachline;
     Beachline* bl = new Beachline;
     Event *e1, *e2;
     while(!pq.empty()) {
         e1 = pq.top();
         pq.pop();
-        if(count < 2) {
+        /* if(count < 2) { */
             // TODO handle degenerate case where the first two sites have the same y
             e2 = pq.top();
             pq.pop();
@@ -90,15 +98,17 @@ int main(int argc, char** argv) {
             bl->insertBreakpoint(e1,e2);
             bl->insertBreakpoint(e2,e1);
 
-            count++;
             /* first = false; */
-        }
+        /* } */
 
         e2 = nullptr;
     }
 
+    sweeplineY = 5;
+    std::cout << "sweepline " << sweeplineY << std::endl;
+
     for (BLSet::iterator it=bl->set.begin(); it!=bl->set.end(); ++it)
-        std::cout << ' ' << *it;
+        std::cout << ' ' <<  (*it)->computeIntersection(sweeplineY) << std::endl;
 
 
 
@@ -120,7 +130,6 @@ int main(int argc, char** argv) {
 
     /* std::cout << p.first << "," << p.second << endl; */
 
-    /* print_queue(pq); */
 
 
 
