@@ -11,6 +11,7 @@
 #include <set>
 
 #include <iostream>
+using namespace std;
 
 enum EventType       { CircleE, PointE };
 
@@ -89,7 +90,10 @@ class BLNode {
 // BLNodes are compared by their breakpoints
 struct CompareBLNode {
     bool operator()(const BLNode* b1, const BLNode* b2) const {
-        std::cout << "this was invoked " << sweeplineY << std::endl;
+        std::cout << "comarison invoked with sweepline = " << sweeplineY << std::endl;
+        cout << b1->getBreakpoint()->first->x << "," << b1->getBreakpoint()->first->y << ": " << b1->getBreakpoint()->second->x << "," << b1->getBreakpoint()->second->y << ": " << b1->computeIntersection(sweeplineY) << endl;
+        cout << b2->getBreakpoint()->first->x << "," << b2->getBreakpoint()->first->y << ": " << b2->getBreakpoint()->second->x << "," << b2->getBreakpoint()->second->y << ": " << b2->computeIntersection(sweeplineY) << endl;
+        cout << endl;
         return b1->computeIntersection(sweeplineY)
             <= b2->computeIntersection(sweeplineY);
     }
