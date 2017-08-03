@@ -95,7 +95,9 @@ int main(int argc, char** argv) {
 
             // A circle event cannot occur within the first two events, so we don't
             // have to check event types
+            cout << "a call to insert" << endl;
             bl->insertBreakpoint(e1,e2);
+            cout << "a call to insert" << endl;
             bl->insertBreakpoint(e2,e1);
 
             /* first = false; */
@@ -104,11 +106,12 @@ int main(int argc, char** argv) {
         e2 = nullptr;
     }
 
-    sweeplineY = 5;
-    std::cout << "sweepline " << sweeplineY << std::endl;
+    sweeplineY = 104;
+    /* std::cout << "sweepline " << sweeplineY << std::endl; */
 
     for (BLSet::iterator it=bl->set.begin(); it!=bl->set.end(); ++it)
-        std::cout << ' ' <<  (*it)->computeIntersection(sweeplineY) << std::endl;
+        cout << ' ' <<  (*it)->computeIntersection(104);
+    cout << endl;
 
 
 

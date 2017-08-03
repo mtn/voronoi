@@ -10,6 +10,8 @@
 #include <utility>
 #include <set>
 
+#include <iostream>
+
 enum EventType       { CircleE, PointE };
 
 extern double sweeplineY;
@@ -22,8 +24,7 @@ typedef struct {
     Point* p1;
     Point* p2;
     Point* p3;
-
-    Circle* c;
+Circle* c;
     BLNode* node;
 } CircleEvent;
 
@@ -88,6 +89,7 @@ class BLNode {
 // BLNodes are compared by their breakpoints
 struct CompareBLNode {
     bool operator()(const BLNode* b1, const BLNode* b2) const {
+        std::cout << "this was invoked " << sweeplineY << std::endl;
         return b1->computeIntersection(sweeplineY)
             <= b2->computeIntersection(sweeplineY);
     }
