@@ -132,8 +132,8 @@ class Beachline {
 
         void deleteNode(BLNode* node);
 
-        BLNode* getPredecessor(BLNode* node);
-        BLNode* getSuccessor(BLNode* node);
+        BLNode* getPredecessor(BLNode* node) const;
+        BLNode* getSuccessor(BLNode* node) const;
 
         void handleCircleEvent(CircleEvent* ce);
         void handleSiteEvent(SiteEvent* pe);

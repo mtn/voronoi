@@ -272,3 +272,42 @@ void Beachline::insertFixup(BLNode* z) {
     }
 }
 
+BLNode* Beachline::getSuccessor(BLNode* x) const {
+    BLNode* y;
+
+    if(nil != (y = x->rNode)) {
+        while(y->lNode != nil) {
+            y = y->lNode;
+        }
+        return y;
+    } else {
+        y = x->parent;
+        while(x == y->rNode) {
+            x = y;
+            y = y->parent;
+        }
+        if(y == root) return nil;
+        return y;
+    }
+}
+
+BLNode* Beachline::getPredecessor(BLNode* x) const {
+    BLNode* y;
+
+    if(nil != (y = x->lNode)) {
+        while(y->rNode != nil) {
+            y = y->rNode;
+        }
+        return y;
+    } else {
+        y = x->parent;
+        while(x == y->lNode) {
+            if(y == root) return nil;
+            x = y;
+            y = y->parent;
+        }
+        return y;
+    }
+}
+
+
