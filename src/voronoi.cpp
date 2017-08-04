@@ -123,6 +123,58 @@ Beachline::Beachline(Event* e1, Event* e2) {
     this->insert(e2,e1);
 }
 
+void Beachline::destroyTree(BLNode* node) {
+    if(node != NULL) {
+        destroyTree(node->lNode);
+        destroyTree(node->rNode);
+        delete node;
+    }
+}
+
+void Beachline::destroyTree() {
+    destroyTree(this->root);
+}
+
+void Beachline::rotateLeft(BLNode* x) {
+    BLNode* y = x->rNode;
+    x->rNode = y->lNode;
+
+    if(y->lNode == nil) {
+        y->lNode->parent = x;
+    }
+
+    y->parent = x->parent;
+
+    if(x == x->parent->lNode) {
+        x->parent->lNode = y;
+    } else {
+        x->parent->rNode = y;
+    }
+
+    y->lNode = y;
+    x->parent = y;
+}
+
+void Beachline::rotateRight(BLNode* y) {
+    BLNode* x = y->lNode;
+    y->lNode = x->rNode;
+
+    if(nil != x->rNode) {
+        x->rNode->parent = y;
+    }
+
+    x->parent = y->parent;
+
+    if(y == y->parent->lNode) {
+        y->parent->lNode = x;
+    } else {
+        y->parent->rNode = x;
+    }
+
+    x->rNode = y;
+    y->parent = x;
+}
+
 void Beachline::insert(Event* e1, Event* e2) {
     Breakpoint* bp;
     BLNode* node;
@@ -142,23 +194,6 @@ void Beachline::insert(Event* e1, Event* e2) {
 
     node->setEdge(e);
     this->insert(node);
-}
-
-void Beachline::destroyTree(BLNode* node) {
-    if(node != NULL) {
-        destroyTree(node->lNode);
-        destroyTree(node->rNode);
-        delete node;
-    }
-}
-
-void Beachline::destroyTree() {
-    destroyTree(this->root);
-}
-
-void Beachline::rotateLeft(BLNode* x) {
-    BLNode* y = x->rNode;
-    x->rNode = y->lNode;
 }
 
 void Beachline::insert(Point* p) {

@@ -139,8 +139,8 @@ class Beachline {
         void handleSiteEvent(SiteEvent* pe);
 
     protected:
-        void rotateLeft(BLNode* node);
-        void rotateRight();
+        void rotateLeft(BLNode* x);
+        void rotateRight(BLNode* y);
 
         BLNode* root;
         BLNode* nil;
