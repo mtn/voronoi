@@ -150,7 +150,8 @@ class Beachline {
         void insert(BLNode* z);
         void insertFixup(BLNode* z);
 
-        void destroyTree(BLNode* node);
+        void destroyTree(BLNode* x);
+        void deleteFixup(BLNode* x);
 
         BLNode* insert(Point* p, BLNode* node);
         BLNode* insert(Breakpoint* bp, BLNode* node);

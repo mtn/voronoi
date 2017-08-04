@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cmath>
+#include <stack>
 
 double getEventPriority(const Event* e) {
     if(e->type == PointE) {
@@ -123,6 +124,11 @@ Beachline::Beachline(Event* e1, Event* e2) {
     this->insert(e2,e1);
 }
 
+Beachline::~Beachline() {
+    // TODO rewrite this without recursion using a stack
+    destroyTree();
+}
+
 void Beachline::destroyTree(BLNode* node) {
     if(node != NULL) {
         destroyTree(node->lNode);
@@ -133,6 +139,7 @@ void Beachline::destroyTree(BLNode* node) {
 
 void Beachline::destroyTree() {
     destroyTree(this->root);
+    delete nil;
 }
 
 void Beachline::rotateLeft(BLNode* x) {
@@ -309,5 +316,100 @@ BLNode* Beachline::getPredecessor(BLNode* x) const {
         return y;
     }
 }
+
+void Beachline::deleteNode(BLNode* z) {
+    BLNode* y = ((z->lNode == nil) || (z->rNode == nil)) ? z : getSuccessor(z);
+    BLNode* x = (y->lNode == nil) ? y->rNode : y->lNode;
+
+    if(root == (x->parent = y->parent)) {
+        root->lNode = x;
+    } else {
+        if(y == y->parent->lNode) {
+            y->parent->lNode = x;
+        } else {
+            y->parent->rNode = x;
+        }
+    }
+    if(y != z) {
+        y->lNode = z->lNode;
+        y->rNode = z->rNode;
+        y->parent = z->parent;
+        z->lNode->parent = z->rNode->parent = y;
+
+        if(z == z->parent->lNode) {
+            z->parent->lNode = y;
+        } else {
+            z->parent->rNode = y;
+        }
+
+        if(y->color == Black) {
+            y->color = z->color;
+            deleteFixup(x);
+        } else {
+            y->color = z->color;
+        }
+        delete z;
+    }
+}
+
+void Beachline::deleteFixup(BLNode* x) {
+    BLNode* w;
+    BLNode* rootLeft = root->lNode;
+
+    while((x->color = Black) && (rootLeft != x)) {
+        if(x == x->parent->lNode) {
+            w = x->parent->lNode;
+
+            if(w->color == Red) {
+                w->color = Black;
+                x->parent->color = Red;
+                rotateLeft(x->parent);
+                w = x->parent->rNode;
+            }
+
+            if((w->rNode->color == Black) && (w->lNode->color == Red)) {
+                w->color = Red;
+                x = x->parent;
+            } else {
+                if(w->rNode->color == Black) {
+                    w->lNode->color = Black;
+                    w->color = Red;
+                    rotateRight(w);
+                    w = x->parent->rNode;
+                }
+                w->color = x->parent->color;
+                x->parent->color = w->rNode->color = Black;
+                rotateLeft(x->parent);
+                w = x->parent->lNode;
+            }
+        } else {
+            w = x->parent->lNode;
+            if(w->color == Red) {
+                w->color = Black;
+                x->parent->color = Red;
+                rotateRight(x->parent);
+                w = x->parent->lNode;
+            }
+
+            if((w->rNode->color == Black) && (w->lNode->color == Black)) {
+                w->color = Red;
+                x = x->parent;
+            } else {
+                if(w->lNode->color == Black) {
+                    w->rNode->color = Black;
+                    w->color = Red;
+                    rotateLeft(w);
+                    w = x->parent->lNode;
+                }
+                w->color = x->parent->color;
+                x->parent->color = w->lNode->color = Black;
+                rotateRight(x->parent);
+                x = rootLeft;
+            }
+        }
+    }
+    x->color = Black;
+}
+
 
 
