@@ -18,8 +18,8 @@ BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) {
     this->p = nullptr;
     this->breakpoint = b;
     this->edge = e;
-    this->left = nullptr;
-    this->right = nullptr;
+    this->lEvent = nullptr;
+    this->rEvent = nullptr;
 }
 
 BLNode::BLNode(Breakpoint* b) {
@@ -33,8 +33,8 @@ BLNode::BLNode(Point* p) {
     this->p = p;
     this->breakpoint = nullptr;
     this->edge = nullptr;
-    this->left = nullptr;
-    this->right = nullptr;
+    this->lEvent = nullptr;
+    this->rEvent = nullptr;
 }
 
 void BLNode::setBreakpoint(Breakpoint* bp) {
@@ -107,7 +107,7 @@ double BLNode::computeIntersection(double sweeplineY) const {
 
 
 Beachline::Beachline() {
-    this->root = NULL;
+
 }
 
 Beachline::Beachline(BLNode* root) {
@@ -126,10 +126,7 @@ void Beachline::destroyTree() {
     destroyTree(this->root);
 }
 
-
-
-
-void Beachline::insertBreakpoint(Event* e1, Event* e2) {
+void Beachline::insert(Event* e1, Event* e2) {
     Breakpoint* bp;
     BLNode* node;
 
@@ -147,10 +144,15 @@ void Beachline::insertBreakpoint(Event* e1, Event* e2) {
     e->sibling->sibling = e;
 
     node->setEdge(e);
-    this->set.insert(node);
+    this->insert(node);
 }
 
-void Beachline::insertPoint(Event* e) {
+void Beachline::insert(Point* p) {
+    BLNode* node;
+
+}
+
+void Beachline::insert(BLNode* node) {
 
 }
 

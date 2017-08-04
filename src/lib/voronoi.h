@@ -14,6 +14,7 @@
 using namespace std;
 
 enum EventType       { CircleE, PointE };
+enum NodeColor       { Red, Black };
 
 extern double sweeplineY;
 
@@ -53,6 +54,8 @@ struct CompareEvent {
 
 typedef std::pair<const Point*,const Point*> Breakpoint;
 class BLNode {
+    friend class Beachline;
+
     public:
         BLNode(Point* p); // Intended only for the initial insertion
         BLNode(Breakpoint* b);
@@ -76,6 +79,9 @@ class BLNode {
         // Left and right nodes in the RB tree
         BLNode* lNode;
         BLNode* rNode;
+        BLNode* parent;
+
+        NodeColor color;
 
     private:
         // TODO use unions to enforce that nothing can exist simultaneously with a point
@@ -95,41 +101,54 @@ class BLNode {
 /* Defines a modified RB tree that supports dynamic keys (which is fine here * because the order of parabolas along the beachline being encoded is
  * invariant). */
 
-// BLNodes are compared by their breakpoints
+// BLNodes are compared by the x coordinate of their breakpoints
 struct CompareBLNode {
     bool operator()(const BLNode* b1, const BLNode* b2) const {
-        std::cout << "comarison invoked with sweepline = " << sweeplineY << std::endl;
-        cout << b1->getBreakpoint()->first->x << "," << b1->getBreakpoint()->first->y << ": " << b1->getBreakpoint()->second->x << "," << b1->getBreakpoint()->second->y << ": " << b1->computeIntersection(sweeplineY) << endl;
-        cout << b2->getBreakpoint()->first->x << "," << b2->getBreakpoint()->first->y << ": " << b2->getBreakpoint()->second->x << "," << b2->getBreakpoint()->second->y << ": " << b2->computeIntersection(sweeplineY) << endl;
-        cout << endl;
         return b1->computeIntersection(sweeplineY)
             <= b2->computeIntersection(sweeplineY);
     }
 };
 
+/*
+ * The beachline is implemented as a RB tree that doesn't explicitly
+ * store keys. Rather, they are computed dynamically each time there is
+ * an insertion into the tree. Normally, having keys that change (as the
+ * x positions of breakpoints do) would be problematic. Because ordering
+ * is invariant in this problem, however, this is not a concern.
+ */
+// TODO handlesite should check and manage the first case instead of main
 class Beachline {
     public:
         Beachline();
         Beachline(BLNode* root);
         ~Beachline();
 
-        void insert(Point* p);
-        void insert(Breakpoint* bp);
         void destroyTree();
 
-        void insertBreakpoint(Event* e1, Event* e2); // Only used for the first insertion
-        void insertPoint(Event* e);
-        // TODO handlesite should check and manage the first case instead of main
+        void insert(Point* p);
+        void insert(Event* e1, Event* e2); // Only used for the first insertion
+        BLNode* getPredecessor(BLNode* node);
+        BLNode* getSuccessor(BLNode* node);
+
+        void deleteNode(BLNode* node);
 
         void handleCircleEvent(CircleEvent* ce);
         void handleSiteEvent(SiteEvent* pe);
 
+    protected:
+        void rotateLeft(BLNode* node);
+        void rotateRight();
+
+
     private:
         void destroyTree(BLNode* node);
+        void insert(BLNode* node);
         void insert(Point* p, BLNode* node);
         void insert(Breakpoint* bp, BLNode* node);
 
         BLNode* root;
+        BLNode* nil; // Sentinel
+
 };
 
 

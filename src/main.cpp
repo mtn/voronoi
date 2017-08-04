@@ -82,7 +82,6 @@ int main(int argc, char** argv) {
     // To work around the first insertion edgecase, the first breakpoint is manually
     // constructed and then inserted into the set
     /* bool first = true; */
-    BLSet beachline;
     Beachline* bl = new Beachline;
     Event *e1, *e2;
     while(!pq.empty()) {
@@ -109,9 +108,6 @@ int main(int argc, char** argv) {
     sweeplineY = 104;
     /* std::cout << "sweepline " << sweeplineY << std::endl; */
 
-    for (BLSet::iterator it=bl->set.begin(); it!=bl->set.end(); ++it)
-        cout << ' ' <<  (*it)->computeIntersection(104);
-    cout << endl;
 
 
 
