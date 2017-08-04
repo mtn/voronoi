@@ -128,7 +128,7 @@ class Beachline {
 
         void destroyTree();
 
-        void insert(Point* p);
+        BLNode* insert(Point* p);
 
         void deleteNode(BLNode* node);
 
@@ -147,11 +147,14 @@ class Beachline {
 
 
     private:
-        void destroyTree(BLNode* node);
         void insert(BLNode* node);
-        void insert(Point* p, BLNode* node);
-        void insert(Breakpoint* bp, BLNode* node);
-        void insert(Event* e1, Event* e2);
+        void insertHelper(BLNode* node);
+
+        void destroyTree(BLNode* node);
+
+        BLNode* insert(Point* p, BLNode* node);
+        BLNode* insert(Breakpoint* bp, BLNode* node);
+        BLNode* insert(Event* e1, Event* e2);
 
 };
 

@@ -119,7 +119,7 @@ double BLNode::computeIntersection(double sweeplineY) const {
 
 Beachline::Beachline(Event* e1, Event* e2) {
     nil = BLNode::makeSentinel();
-    this->insert(e1,e2);
+    this->root = this->insert(e1,e2);
     this->insert(e2,e1);
 }
 
@@ -175,7 +175,7 @@ void Beachline::rotateRight(BLNode* y) {
     y->parent = x;
 }
 
-void Beachline::insert(Event* e1, Event* e2) {
+BLNode* Beachline::insert(Event* e1, Event* e2) {
     Breakpoint* bp;
     BLNode* node;
 
@@ -194,14 +194,41 @@ void Beachline::insert(Event* e1, Event* e2) {
 
     node->setEdge(e);
     this->insert(node);
+
+    return node;
 }
 
-void Beachline::insert(Point* p) {
+BLNode* Beachline::insert(Point* p) {
+    return new BLNode;
+}
+
+void Beachline::insert(BLNode* z) {
+
 
 }
 
-void Beachline::insert(BLNode* node) {
+void Beachline::insertHelper(BLNode* z) {
+    BLNode* x = root->lNode;
+    BLNode* y = root;
 
+    z->lNode = z->rNode = nil;
+    while(x != nil) {
+        y = x;
+        if(x->computeIntersection(sweeplineY) > z->computeIntersection(sweeplineY)) {
+            x = x->lNode;
+        } else {
+            x = x->rNode;
+        }
+
+        z->parent = y;
+
+        if((y == root) || (y->computeIntersection(sweeplineY) >
+                    z->computeIntersection(sweeplineY))) {
+            y->lNode = z;
+        } else {
+            y->rNode = z;
+        }
+    }
 }
 
 
