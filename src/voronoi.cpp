@@ -14,6 +14,8 @@ double getEventPriority(const Event* e) {
 
 
 
+BLNode::BLNode() { }
+
 BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) {
     this->p = nullptr;
     this->breakpoint = b;
@@ -35,6 +37,15 @@ BLNode::BLNode(Point* p) {
     this->edge = nullptr;
     this->lEvent = nullptr;
     this->rEvent = nullptr;
+}
+
+BLNode* BLNode::makeSentinel() {
+    BLNode* sentinel = new BLNode;
+    sentinel->lNode = sentinel->rNode = sentinel->parent = sentinel;
+    sentinel->color = Black;
+    sentinel->lEvent = sentinel->rEvent = nullptr;
+    sentinel->edge = nullptr;
+    return sentinel;
 }
 
 void BLNode::setBreakpoint(Breakpoint* bp) {
@@ -106,13 +117,11 @@ double BLNode::computeIntersection(double sweeplineY) const {
 
 
 
+// TODO Replace with a contructor that takes the first breakpoint
 Beachline::Beachline() {
-
+    nil = BLNode::makeSentinel();
 }
 
-Beachline::Beachline(BLNode* root) {
-    this->root = root;
-}
 
 void Beachline::destroyTree(BLNode* node) {
     if(node != NULL) {
@@ -145,6 +154,11 @@ void Beachline::insert(Event* e1, Event* e2) {
 
     node->setEdge(e);
     this->insert(node);
+}
+
+void Beachline::rotateLeft(BLNode* x) {
+    BLNode* y = x->rNode;
+    x->rNode = y->lNode;
 }
 
 void Beachline::insert(Point* p) {

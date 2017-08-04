@@ -57,6 +57,7 @@ class BLNode {
     friend class Beachline;
 
     public:
+        BLNode();
         BLNode(Point* p); // Intended only for the initial insertion
         BLNode(Breakpoint* b);
         BLNode(Breakpoint* b, DCEL_Edge* e);
@@ -82,6 +83,9 @@ class BLNode {
         BLNode* parent;
 
         NodeColor color;
+
+    protected:
+        static BLNode* makeSentinel();
 
     private:
         // TODO use unions to enforce that nothing can exist simultaneously with a point
@@ -120,17 +124,17 @@ struct CompareBLNode {
 class Beachline {
     public:
         Beachline();
-        Beachline(BLNode* root);
         ~Beachline();
 
         void destroyTree();
 
         void insert(Point* p);
         void insert(Event* e1, Event* e2); // Only used for the first insertion
-        BLNode* getPredecessor(BLNode* node);
-        BLNode* getSuccessor(BLNode* node);
 
         void deleteNode(BLNode* node);
+
+        BLNode* getPredecessor(BLNode* node);
+        BLNode* getSuccessor(BLNode* node);
 
         void handleCircleEvent(CircleEvent* ce);
         void handleSiteEvent(SiteEvent* pe);
@@ -139,15 +143,15 @@ class Beachline {
         void rotateLeft(BLNode* node);
         void rotateRight();
 
+        BLNode* root;
+        BLNode* nil;
+
 
     private:
         void destroyTree(BLNode* node);
         void insert(BLNode* node);
         void insert(Point* p, BLNode* node);
         void insert(Breakpoint* bp, BLNode* node);
-
-        BLNode* root;
-        BLNode* nil; // Sentinel
 
 };
 

@@ -82,7 +82,6 @@ int main(int argc, char** argv) {
     // To work around the first insertion edgecase, the first breakpoint is manually
     // constructed and then inserted into the set
     /* bool first = true; */
-    Beachline* bl = new Beachline;
     Event *e1, *e2;
     while(!pq.empty()) {
         e1 = pq.top();
@@ -95,9 +94,9 @@ int main(int argc, char** argv) {
             // A circle event cannot occur within the first two events, so we don't
             // have to check event types
             cout << "a call to insert" << endl;
-            bl->insertBreakpoint(e1,e2);
+            bl->insert(e1,e2);
             cout << "a call to insert" << endl;
-            bl->insertBreakpoint(e2,e1);
+            bl->insert(e2,e1);
 
             /* first = false; */
         /* } */
