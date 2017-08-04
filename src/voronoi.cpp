@@ -117,22 +117,10 @@ double BLNode::computeIntersection(double sweeplineY) const {
 
 
 
-// TODO Replace with a contructor that takes the first breakpoint
-Beachline::Beachline() {
+Beachline::Beachline(Event* e1, Event* e2) {
     nil = BLNode::makeSentinel();
-}
-
-
-void Beachline::destroyTree(BLNode* node) {
-    if(node != NULL) {
-        destroyTree(node->lNode);
-        destroyTree(node->rNode);
-        delete node;
-    }
-}
-
-void Beachline::destroyTree() {
-    destroyTree(this->root);
+    this->insert(e1,e2);
+    this->insert(e2,e1);
 }
 
 void Beachline::insert(Event* e1, Event* e2) {
@@ -156,13 +144,24 @@ void Beachline::insert(Event* e1, Event* e2) {
     this->insert(node);
 }
 
+void Beachline::destroyTree(BLNode* node) {
+    if(node != NULL) {
+        destroyTree(node->lNode);
+        destroyTree(node->rNode);
+        delete node;
+    }
+}
+
+void Beachline::destroyTree() {
+    destroyTree(this->root);
+}
+
 void Beachline::rotateLeft(BLNode* x) {
     BLNode* y = x->rNode;
     x->rNode = y->lNode;
 }
 
 void Beachline::insert(Point* p) {
-    BLNode* node;
 
 }
 

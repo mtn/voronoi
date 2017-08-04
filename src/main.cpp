@@ -79,27 +79,20 @@ int main(int argc, char** argv) {
 
     /* g->close(); */
 
-    // To work around the first insertion edgecase, the first breakpoint is manually
-    // constructed and then inserted into the set
-    /* bool first = true; */
+    bool first = true;
     Event *e1, *e2;
+    Beachline* bl;
     while(!pq.empty()) {
         e1 = pq.top();
         pq.pop();
-        /* if(count < 2) { */
             // TODO handle degenerate case where the first two sites have the same y
+        if(first) {
             e2 = pq.top();
             pq.pop();
 
-            // A circle event cannot occur within the first two events, so we don't
-            // have to check event types
-            cout << "a call to insert" << endl;
-            bl->insert(e1,e2);
-            cout << "a call to insert" << endl;
-            bl->insert(e2,e1);
-
-            /* first = false; */
-        /* } */
+            bl = new Beachline(e1,e2);
+            first = false;
+        }
 
         e2 = nullptr;
     }

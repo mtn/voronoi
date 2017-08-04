@@ -123,13 +123,12 @@ struct CompareBLNode {
 // TODO handlesite should check and manage the first case instead of main
 class Beachline {
     public:
-        Beachline();
+        Beachline(Event* e1, Event* e2);
         ~Beachline();
 
         void destroyTree();
 
         void insert(Point* p);
-        void insert(Event* e1, Event* e2); // Only used for the first insertion
 
         void deleteNode(BLNode* node);
 
@@ -152,6 +151,7 @@ class Beachline {
         void insert(BLNode* node);
         void insert(Point* p, BLNode* node);
         void insert(Breakpoint* bp, BLNode* node);
+        void insert(Event* e1, Event* e2);
 
 };
 
