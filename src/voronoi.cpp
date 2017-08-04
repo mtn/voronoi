@@ -202,19 +202,14 @@ BLNode* Beachline::insert(Point* p) {
     return new BLNode;
 }
 
+
 void Beachline::insert(BLNode* z) {
+    BLNode* y = nil;
+    BLNode* x = root;
 
-
-}
-
-void Beachline::insertHelper(BLNode* z) {
-    BLNode* x = root->lNode;
-    BLNode* y = root;
-
-    z->lNode = z->rNode = nil;
     while(x != nil) {
         y = x;
-        if(x->computeIntersection(sweeplineY) > z->computeIntersection(sweeplineY)) {
+        if(x->computeIntersection(sweeplineY) < z->computeIntersection(sweeplineY)) {
             x = x->lNode;
         } else {
             x = x->rNode;
@@ -222,13 +217,58 @@ void Beachline::insertHelper(BLNode* z) {
 
         z->parent = y;
 
-        if((y == root) || (y->computeIntersection(sweeplineY) >
-                    z->computeIntersection(sweeplineY))) {
+        if(y == nil) {
+            root = z;
+
+        } else if (y->computeIntersection(sweeplineY) > z->computeIntersection(sweeplineY)) {
             y->lNode = z;
         } else {
             y->rNode = z;
         }
+
+        z->lNode = z->rNode = nil;
+        z->color = Red;
+
+        insertFixup(z);
     }
 }
 
+void Beachline::insertFixup(BLNode* z) {
+    BLNode* y;
+
+    while(z->parent->color == Red) {
+        if (z->parent == z->parent->parent->lNode) {
+            y = z->parent->parent->rNode;
+            if(y->color == Red) {
+                z->parent->color = y->color = Black;
+                z->parent->parent->color = Red;
+                z = z->parent->parent;
+            } else {
+                if(z == z->parent->rNode) {
+                    z = z->parent;
+                    rotateLeft(z);
+                }
+                z->parent->color = Black;
+                z->parent->parent->color = Red;
+                rotateRight(z->parent->parent);
+            }
+        } else {
+            y = z->parent->parent->lNode;
+            if(y->color == Red) {
+                z->parent->color = y-> color = Black;
+                z->parent->parent->color = Red;
+                z = z->parent->parent;
+            } else {
+                if(z == z->parent->lNode) {
+                    z = z->parent;
+                    rotateRight(z);
+                }
+                z->parent->color = Black;
+                z->parent->parent->color = Red;
+                rotateLeft(z->parent->parent);
+            }
+        }
+        root->color = Black;
+    }
+}
 

@@ -147,8 +147,8 @@ class Beachline {
 
 
     private:
-        void insert(BLNode* node);
-        void insertHelper(BLNode* node);
+        void insert(BLNode* z);
+        void insertFixup(BLNode* z);
 
         void destroyTree(BLNode* node);
 
