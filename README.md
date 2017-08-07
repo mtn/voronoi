@@ -12,7 +12,8 @@ TODO
 
 ## Sources
 
-TODO
+* The modified AVL tree structure used to represent the beachline was based on an implementation be [Harish R](https://gist.github.com/harish-r) that can be found [here](https://gist.github.com/Harish-R/097688ac7f48bcbadfa5).
+* Algorithm and data structure implementations based on Steve Fortune's plane-sweep algorithm as presented in [Computational Geometry](https://www.amazon.com/Computational-Geometry-Algorithms-Applications-Second/dp/3540656200).
 
 ## Contributors
 

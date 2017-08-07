@@ -40,15 +40,6 @@ BLNode::BLNode(Point* p) {
     this->rEvent = nullptr;
 }
 
-BLNode* BLNode::makeSentinel() {
-    BLNode* sentinel = new BLNode;
-    sentinel->lNode = sentinel->rNode = sentinel->parent = sentinel;
-    sentinel->color = Black;
-    sentinel->lEvent = sentinel->rEvent = nullptr;
-    sentinel->edge = nullptr;
-    return sentinel;
-}
-
 void BLNode::setBreakpoint(Breakpoint* bp) {
     this->p = nullptr;
     this->breakpoint = bp;
@@ -144,9 +135,18 @@ void Beachline::destroyTree() {
 BLNode* Beachline::rotateLeft(BLNode* t) {
     BLNode* u = t->rNode;
     t->rNode = u->lNode;
+
+    if(t->rNode) {
+        t->rNode->parent = t;
+    }
+
     u->lNode = t;
+    u->parent = t->parent;
+    t->parent = u;
+
     t->height = std::max(t->lNode->height,t->rNode->height) + 1;
     u->height = std::max(t->rNode->height,t->height) + 1;
+
     return u;
 }
 
@@ -158,7 +158,15 @@ BLNode* Beachline::doubleRotateLeft(BLNode* t) {
 BLNode* Beachline::rotateRight(BLNode* t) {
     BLNode* u = t->lNode;
     t->lNode = u->rNode;
+
+    if(t->lNode) {
+        t->lNode->parent = t;
+    }
+
     u->rNode = t;
+    u->parent = t->parent;
+    t->parent = u;
+
     t->height = std::max(t->lNode->height,t->rNode->height) + 1;
     u->height = std::max(u->lNode->height,t->height) + 1;
     return u;
@@ -169,12 +177,15 @@ BLNode* Beachline::doubleRotateRight(BLNode* t) {
     return rotateRight(t);
 }
 
-BLNode* Beachline::insert(BLNode* node, BLNode* t) {
+BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
     if(t == NULL) {
         t = node;
+        t->parent = par;
     } else if(node->computeIntersection(sweeplineY)
-            < node->computeIntersection(sweeplineY)){
-        t->lNode = insert(node,t->lNode);
+            < t->computeIntersection(sweeplineY)){
+
+        t->lNode = insert(node,t->lNode,t);
+
         if(t->lNode->height - t->rNode->height == 2) {
             if(node->computeIntersection(sweeplineY)
              < t->computeIntersection(sweeplineY)) {
@@ -183,8 +194,11 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t) {
                 t = doubleRotateRight(t);
             }
         }
+
     } else {
-        t->rNode = insert(node,t->rNode);
+
+        t->rNode = insert(node,t->rNode,t);
+
         if(t->rNode->height - t->lNode->height == 2) {
             if(node->computeIntersection(sweeplineY)
              > t->computeIntersection(sweeplineY)) {
@@ -193,16 +207,60 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t) {
                 t = doubleRotateLeft(t);
             }
         }
+
     }
 
     t->height = std::max(t->lNode->height,t->rNode->height) + 1;
     return t;
 }
 
-BLNode* Beachline::getSuccessor(BLNode* x) const {
+BLNode* Beachline::findMin(BLNode* n) const {
+    if(n == nullptr) {
+        return nullptr;
+    } else if(n->lNode == nullptr){
+        return n;
+    } else {
+        return findMin(n->lNode);
+    }
+
 }
 
-BLNode* Beachline::getPredecessor(BLNode* x) const {
+BLNode* Beachline::findMax(BLNode* n) const {
+    if(n == nullptr) {
+        return nullptr;
+    } else if(n->rNode == nullptr) {
+        return n;
+    } else {
+        return findMax(n->rNode);
+    }
+}
+
+BLNode* Beachline::getSuccessor(BLNode* n) const {
+    if(n->rNode != nullptr) {
+        return findMin(n->rNode);
+    }
+
+    BLNode* p = n->parent;
+    while(p != nullptr && n == p->rNode) {
+        n = p;
+        p = p->parent;
+    }
+
+    return p;
+}
+
+BLNode* Beachline::getPredecessor(BLNode* n) const {
+    if(n->lNode != nullptr) {
+        return findMax(n->rNode);
+    }
+
+    BLNode* p = n->parent;
+    while(p != nullptr && n == p->lNode) {
+        n = p;
+        p = p->parent;
+    }
+
+    return p;
 }
 
 BLNode* Beachline::insert(Event* e1, Event* e2) {
@@ -223,7 +281,7 @@ BLNode* Beachline::insert(Event* e1, Event* e2) {
     e->sibling->sibling = e;
 
     node->setEdge(e);
-    this->insert(node,root); // root is null, so this node is made the root
+    this->insert(node,root,nullptr); // root is null, so this node is made the root
 
     return node;
 }

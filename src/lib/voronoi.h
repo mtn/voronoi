@@ -137,12 +137,14 @@ class Beachline {
 
 
     private:
-        BLNode* insert(BLNode* node, BLNode* t);
+        BLNode* insert(BLNode* node, BLNode* t, BLNode* par);
         BLNode* insert(Event* e1, Event* e2);
 
         BLNode* deleteNode(BLNode* node, BLNode* temp);
         void destroyTree(BLNode* x);
 
+        BLNode* findMin(BLNode* n) const;
+        BLNode* findMax(BLNode* n) const;
 };
 
 
