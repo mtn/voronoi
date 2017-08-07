@@ -26,7 +26,9 @@ typedef struct {
     Point* p1;
     Point* p2;
     Point* p3;
-Circle* c;
+
+    Circle* c;
+
     BLNode* node;
 } CircleEvent;
 
@@ -84,9 +86,6 @@ class BLNode {
 
         NodeColor color;
 
-    protected:
-        static BLNode* makeSentinel();
-
     private:
         // TODO use unions to enforce that nothing can exist simultaneously with a point
 
@@ -102,19 +101,8 @@ class BLNode {
 
 };
 
-/* Defines a modified RB tree that supports dynamic keys (which is fine here * because the order of parabolas along the beachline being encoded is
- * invariant). */
-
-// BLNodes are compared by the x coordinate of their breakpoints
-struct CompareBLNode {
-    bool operator()(const BLNode* b1, const BLNode* b2) const {
-        return b1->computeIntersection(sweeplineY)
-            <= b2->computeIntersection(sweeplineY);
-    }
-};
-
 /*
- * The beachline is implemented as a RB tree that doesn't explicitly
+ * The beachline is implemented as a AVL tree that doesn't explicitly
  * store keys. Rather, they are computed dynamically each time there is
  * an insertion into the tree. Normally, having keys that change (as the
  * x positions of breakpoints do) would be problematic. Because ordering
