@@ -121,7 +121,7 @@ class Beachline {
         BLNode* getSuccessor(BLNode* node) const;
 
         void destroyTree();
-        BLNode* deleteNode(BLNode* node);
+        BLNode* remove(BLNode* node);
 
         void handleCircleEvent(CircleEvent* ce);
         void handleSiteEvent(SiteEvent* pe);
@@ -133,14 +133,12 @@ class Beachline {
         BLNode* doubleRotateRight(BLNode* node);
 
         BLNode* root;
-        BLNode* nil;
-
 
     private:
         BLNode* insert(BLNode* node, BLNode* t, BLNode* par);
         BLNode* insert(Event* e1, Event* e2);
 
-        BLNode* deleteNode(BLNode* node, BLNode* temp);
+        BLNode* remove(BLNode* node, BLNode* temp);
         void destroyTree(BLNode* x);
 
         BLNode* findMin(BLNode* n) const;

@@ -116,7 +116,7 @@ Beachline::Beachline(Event* e1, Event* e2) {
 
 Beachline::~Beachline() {
     // TODO rewrite this without recursion using a stack
-    destroyTree();
+    destroyTree(this->root);
 }
 
 void Beachline::destroyTree(BLNode* node) {
@@ -125,11 +125,6 @@ void Beachline::destroyTree(BLNode* node) {
         destroyTree(node->rNode);
         delete node;
     }
-}
-
-void Beachline::destroyTree() {
-    destroyTree(this->root);
-    delete nil;
 }
 
 BLNode* Beachline::rotateLeft(BLNode* t) {
@@ -214,6 +209,29 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
     return t;
 }
 
+BLNode* Beachline::insert(Event* e1, Event* e2) {
+    Breakpoint* bp;
+    BLNode* node;
+
+    sweeplineY = e1->se->y > e2->se->y ? e1->se->y : e2->se->y;
+
+    bp = new Breakpoint;
+    *bp = std::make_pair(e1->se,e2->se);
+    node = new BLNode(bp);
+
+    DCEL_Face* face = new DCEL_Face;
+    DCEL_Edge* e = new DCEL_Edge;
+
+    face->edge = e;
+    e->sibling = new DCEL_Edge;
+    e->sibling->sibling = e;
+
+    node->setEdge(e);
+    this->insert(node,root,nullptr); // root is null, so this node is made the root
+
+    return node;
+}
+
 BLNode* Beachline::findMin(BLNode* n) const {
     if(n == nullptr) {
         return nullptr;
@@ -222,7 +240,6 @@ BLNode* Beachline::findMin(BLNode* n) const {
     } else {
         return findMin(n->lNode);
     }
-
 }
 
 BLNode* Beachline::findMax(BLNode* n) const {
@@ -263,26 +280,71 @@ BLNode* Beachline::getPredecessor(BLNode* n) const {
     return p;
 }
 
-BLNode* Beachline::insert(Event* e1, Event* e2) {
-    Breakpoint* bp;
-    BLNode* node;
+BLNode* Beachline::remove(BLNode* n) {
+    return remove(n,root);
+}
 
-    sweeplineY = e1->se->y > e2->se->y ? e1->se->y : e2->se->y;
+// Fails if the node requested for removal is not in tree
+BLNode* Beachline::remove(BLNode* n, BLNode* t) {
+    BLNode* temp;
 
-    bp = new Breakpoint;
-    *bp = std::make_pair(e1->se,e2->se);
-    node = new BLNode(bp);
+    if(t == nullptr) {
+        return nullptr;
+    }
 
-    DCEL_Face* face = new DCEL_Face;
-    DCEL_Edge* e = new DCEL_Edge;
+    // Searching
+    else if(n->computeIntersection(sweeplineY)
+            < t->computeIntersection(sweeplineY)) {
+        t->lNode = remove(n,t->lNode);
+    } else if(n->computeIntersection(sweeplineY)
+            > t->computeIntersection(sweeplineY)) {
+        t->rNode = remove(n,t->rNode);
+    }
 
-    face->edge = e;
-    e->sibling = new DCEL_Edge;
-    e->sibling->sibling = e;
+    // Element found with 2 children
+    // Finds least node in right subtree and swaps it in
+    else if(t->lNode && t->rNode) {
+        temp = t;
+        t = findMin(t->rNode);
+        t->parent = temp->parent;
+        t->lNode = temp->lNode;
+        t->rNode = temp->rNode;
+    }
 
-    node->setEdge(e);
-    this->insert(node,root,nullptr); // root is null, so this node is made the root
+    // Element found with <2 children
+    // If there's a child, it's shifted up. Otherwise, it's a leaf.
+    else {
+        temp = t;
+        if(t->lNode == nullptr) {
+            t->rNode->parent = t->parent;
+            t = t->rNode;
+        } else if(t->rNode == nullptr) {
+            t->lNode->parent = t->parent;
+            t = t->lNode;
+        }
+    }
+    if(t == nullptr) {
+        return t;
+    }
 
-    return node;
+    t->height = std::max(t->lNode->height,t->rNode->height);
+
+    // Balancing Checks
+
+    if(t->lNode->height - t->rNode->height == 2) {
+
+        if(t->lNode->lNode->height - t->lNode->rNode->height == 1) {
+            return rotateLeft(t);
+        } else {
+            return doubleRotateLeft(t);
+        }
+    } else if(t->rNode->height - t->lNode->height == 2) {
+        if(t->rNode->rNode->height - t->rNode->lNode->height == 1) {
+            return rotateRight(t);
+        } else{
+            doubleRotateRight(t);
+        }
+    }
+    return t;
 }
 
