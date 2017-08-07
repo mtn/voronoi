@@ -175,10 +175,13 @@ BLNode* Beachline::doubleRotateRight(BLNode* t) {
 
 BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
     if(t == nullptr) {
+        cout << "placed node" << endl;
         t = node;
         t->parent = par;
     } else if(node->computeIntersection(sweeplineY)
             < t->computeIntersection(sweeplineY)){
+        cout << "comparison: " << node->computeIntersection(sweeplineY) << " " << t->computeIntersection(sweeplineY) << endl;
+        cout << "putting it somewhere left, sweepline: " << sweeplineY << endl;
 
         t->lNode = insert(node,t->lNode,t);
 
@@ -194,6 +197,8 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
         }
 
     } else {
+        cout << "comparison: " << node->computeIntersection(sweeplineY) << " " << t->computeIntersection(sweeplineY) << endl;
+        cout << "putting it somewhere right, sweepline: " << sweeplineY << endl;
 
         t->rNode = insert(node,t->rNode,t);
 
@@ -224,6 +229,7 @@ BLNode* Beachline::insert(Event* e1, Event* e2) {
     bp = new Breakpoint;
     *bp = std::make_pair(e1->se,e2->se);
     node = new BLNode(bp);
+    node->lNode = node->rNode = node->parent = nullptr;
 
     DCEL_Face* face = new DCEL_Face;
     DCEL_Edge* e = new DCEL_Edge;

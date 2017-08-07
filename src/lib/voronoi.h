@@ -128,6 +128,8 @@ class Beachline {
         void handleCircleEvent(CircleEvent* ce);
         void handleSiteEvent(SiteEvent* pe);
 
+        BLNode* insert(Event* e1, Event* e2);
+
     protected:
         BLNode* rotateLeft(BLNode* node);
         BLNode* doubleRotateLeft(BLNode* node);
@@ -140,7 +142,6 @@ class Beachline {
 
     private:
         BLNode* insert(BLNode* node, BLNode* t, BLNode* par);
-        BLNode* insert(Event* e1, Event* e2);
 
         BLNode* remove(BLNode* node, BLNode* temp);
         void destroyTree(BLNode* x);

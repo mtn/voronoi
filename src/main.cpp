@@ -86,21 +86,27 @@ int main(int argc, char** argv) {
         e1 = pq.top();
         pq.pop();
             // TODO handle degenerate case where the first two sites have the same y
-        if(first) {
             e2 = pq.top();
             pq.pop();
+        if(first) {
 
             bl = new Beachline(e1,e2);
             first = false;
+        } else {
+            bl->insert(e1,e2);
+            bl->insert(e2,e1);
         }
 
         e2 = nullptr;
     }
 
-    sweeplineY = 104;
+    sweeplineY = 103;
     BLNode* min = bl->findMin();
-    cout << "made it here" << endl;
-    cout << min->getBreakpoint()->first->x << endl;
+    while(min) {
+        cout << min->computeIntersection(sweeplineY) << " ";
+        min = bl->getSuccessor(min);
+    }
+    cout << endl;
 
 
 
