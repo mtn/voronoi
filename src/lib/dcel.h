@@ -2,8 +2,6 @@
 
 #include "point.h"
 
-enum Color { Green, Blue, Red, Yellow };
-
 // TODO make an interface based on how these were used
 // eg. Creating a sibling should happen in a function rather than e.s.s=e, etc.
 
@@ -24,7 +22,6 @@ struct edge {
 
 struct face {
     struct edge* edge;
-    Color c;
 };
 
 typedef struct vert DCEL_Vert;

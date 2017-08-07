@@ -14,6 +14,7 @@
 using namespace std;
 
 enum EventType       { CircleE, PointE };
+enum NodeColor       { Red, Black };
 
 extern double sweeplineY;
 
@@ -53,7 +54,10 @@ struct CompareEvent {
 
 typedef std::pair<const Point*,const Point*> Breakpoint;
 class BLNode {
+    friend class Beachline;
+
     public:
+        BLNode();
         BLNode(Point* p); // Intended only for the initial insertion
         BLNode(Breakpoint* b);
         BLNode(Breakpoint* b, DCEL_Edge* e);
@@ -64,14 +68,24 @@ class BLNode {
         void setEdge(DCEL_Edge* edge);
         DCEL_Edge* getEdge() const;
 
-        void setLeft(CircleEvent* left);
-        CircleEvent* getLeft() const;
-        void setRight(CircleEvent* right);
-        CircleEvent* getRight() const;
+        void setLEvent(CircleEvent* left);
+        CircleEvent* getLEvent() const;
+        void setREvent(CircleEvent* right);
+        CircleEvent* getREvent() const;
 
         Point* getPoint() const;
 
         double computeIntersection(double sweeplineY) const;
+
+        // Left and right nodes in the RB tree
+        BLNode* lNode;
+        BLNode* rNode;
+        BLNode* parent;
+
+        NodeColor color;
+
+    protected:
+        static BLNode* makeSentinel();
 
     private:
         // TODO use unions to enforce that nothing can exist simultaneously with a point
@@ -83,31 +97,66 @@ class BLNode {
 
         // The circle events when the left and right arcs will disappear are store
         // Thus, prev.right should agree with this.left, etc.
-        CircleEvent* left; // Could be null
-        CircleEvent* right;
+        CircleEvent* lEvent; // Could be null
+        CircleEvent* rEvent;
+
 };
 
-// BLNodes are compared by their breakpoints
+/* Defines a modified RB tree that supports dynamic keys (which is fine here * because the order of parabolas along the beachline being encoded is
+ * invariant). */
+
+// BLNodes are compared by the x coordinate of their breakpoints
 struct CompareBLNode {
     bool operator()(const BLNode* b1, const BLNode* b2) const {
-        std::cout << "comarison invoked with sweepline = " << sweeplineY << std::endl;
-        cout << b1->getBreakpoint()->first->x << "," << b1->getBreakpoint()->first->y << ": " << b1->getBreakpoint()->second->x << "," << b1->getBreakpoint()->second->y << ": " << b1->computeIntersection(sweeplineY) << endl;
-        cout << b2->getBreakpoint()->first->x << "," << b2->getBreakpoint()->first->y << ": " << b2->getBreakpoint()->second->x << "," << b2->getBreakpoint()->second->y << ": " << b2->computeIntersection(sweeplineY) << endl;
-        cout << endl;
         return b1->computeIntersection(sweeplineY)
             <= b2->computeIntersection(sweeplineY);
     }
 };
 
-typedef std::set<BLNode*,CompareBLNode> BLSet;
-typedef struct {
-    BLSet set;
+/*
+ * The beachline is implemented as a RB tree that doesn't explicitly
+ * store keys. Rather, they are computed dynamically each time there is
+ * an insertion into the tree. Normally, having keys that change (as the
+ * x positions of breakpoints do) would be problematic. Because ordering
+ * is invariant in this problem, however, this is not a concern.
+ */
+// TODO handlesite should check and manage the first case instead of main
+class Beachline {
+    public:
+        Beachline(Event* e1, Event* e2);
+        ~Beachline();
 
-    void insertBreakpoint(Event* e1, Event* e2); // Only used for the first insertion
-    void insertPoint(Event* e);
-    // TODO handlesite should check and manage the first case instead of main
+        void destroyTree();
 
-    void handleCircleEvent(CircleEvent* ce);
-    void handleSiteEvent(SiteEvent* pe);
-} Beachline;
+        BLNode* insert(Point* p);
+
+        void deleteNode(BLNode* node);
+
+        BLNode* getPredecessor(BLNode* node) const;
+        BLNode* getSuccessor(BLNode* node) const;
+
+        void handleCircleEvent(CircleEvent* ce);
+        void handleSiteEvent(SiteEvent* pe);
+
+    protected:
+        void rotateLeft(BLNode* x);
+        void rotateRight(BLNode* y);
+
+        BLNode* root;
+        BLNode* nil;
+
+
+    private:
+        void insert(BLNode* z);
+        void insertFixup(BLNode* z);
+
+        void destroyTree(BLNode* x);
+        void deleteFixup(BLNode* x);
+
+        BLNode* insert(Point* p, BLNode* node);
+        BLNode* insert(Breakpoint* bp, BLNode* node);
+        BLNode* insert(Event* e1, Event* e2);
+
+};
+
 
