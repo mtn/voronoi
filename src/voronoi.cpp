@@ -141,10 +141,68 @@ void Beachline::destroyTree() {
     delete nil;
 }
 
-void Beachline::rotateLeft(BLNode* x) {
+BLNode* Beachline::rotateLeft(BLNode* t) {
+    BLNode* u = t->rNode;
+    t->rNode = u->lNode;
+    u->lNode = t;
+    t->height = std::max(t->lNode->height,t->rNode->height) + 1;
+    u->height = std::max(t->rNode->height,t->height) + 1;
+    return u;
 }
 
-void Beachline::rotateRight(BLNode* y) {
+BLNode* Beachline::doubleRotateLeft(BLNode* t) {
+    t->rNode = rotateRight(t->rNode);
+    return rotateLeft(t);
+}
+
+BLNode* Beachline::rotateRight(BLNode* t) {
+    BLNode* u = t->lNode;
+    t->lNode = u->rNode;
+    u->rNode = t;
+    t->height = std::max(t->lNode->height,t->rNode->height) + 1;
+    u->height = std::max(u->lNode->height,t->height) + 1;
+    return u;
+}
+
+BLNode* Beachline::doubleRotateRight(BLNode* t) {
+    t->lNode = rotateLeft(t->lNode);
+    return rotateRight(t);
+}
+
+BLNode* Beachline::insert(BLNode* node, BLNode* t) {
+    if(t == NULL) {
+        t = node;
+    } else if(node->computeIntersection(sweeplineY)
+            < node->computeIntersection(sweeplineY)){
+        t->lNode = insert(node,t->lNode);
+        if(t->lNode->height - t->rNode->height == 2) {
+            if(node->computeIntersection(sweeplineY)
+             < t->computeIntersection(sweeplineY)) {
+                t = rotateRight(t);
+            } else {
+                t = doubleRotateRight(t);
+            }
+        }
+    } else {
+        t->rNode = insert(node,t->rNode);
+        if(t->rNode->height - t->lNode->height == 2) {
+            if(node->computeIntersection(sweeplineY)
+             > t->computeIntersection(sweeplineY)) {
+                t = rotateLeft(t);
+            } else {
+                t = doubleRotateLeft(t);
+            }
+        }
+    }
+
+    t->height = std::max(t->lNode->height,t->rNode->height) + 1;
+    return t;
+}
+
+BLNode* Beachline::getSuccessor(BLNode* x) const {
+}
+
+BLNode* Beachline::getPredecessor(BLNode* x) const {
 }
 
 BLNode* Beachline::insert(Event* e1, Event* e2) {
@@ -165,29 +223,8 @@ BLNode* Beachline::insert(Event* e1, Event* e2) {
     e->sibling->sibling = e;
 
     node->setEdge(e);
-    this->insert(node);
+    this->insert(node,root); // root is null, so this node is made the root
 
     return node;
-}
-
-BLNode* Beachline::insert(Point* p) {
-}
-
-void Beachline::insert(BLNode* z) {
-}
-
-void Beachline::insertFixup(BLNode* z) {
-}
-
-BLNode* Beachline::getSuccessor(BLNode* x) const {
-}
-
-BLNode* Beachline::getPredecessor(BLNode* x) const {
-}
-
-void Beachline::deleteNode(BLNode* z) {
-}
-
-void Beachline::deleteFixup(BLNode* x) {
 }
 
