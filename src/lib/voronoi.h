@@ -123,6 +123,8 @@ class Beachline {
         void destroyTree();
         BLNode* remove(BLNode* node);
 
+        BLNode* findMin() const;
+
         void handleCircleEvent(CircleEvent* ce);
         void handleSiteEvent(SiteEvent* pe);
 
@@ -131,6 +133,8 @@ class Beachline {
         BLNode* doubleRotateLeft(BLNode* node);
         BLNode* rotateRight(BLNode* node);
         BLNode* doubleRotateRight(BLNode* node);
+
+        double height(BLNode* n);
 
         BLNode* root;
 

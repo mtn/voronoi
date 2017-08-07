@@ -110,12 +110,13 @@ double BLNode::computeIntersection(double sweeplineY) const {
 
 
 Beachline::Beachline(Event* e1, Event* e2) {
-    this->root = this->insert(e1,e2);
-    this->insert(e2,e1);
+    root = nullptr; // Required to prevent root from getting some address on the stack
+    root = insert(e1,e2);
+    insert(e2,e1);
 }
 
 Beachline::~Beachline() {
-    // TODO rewrite this without recursion using a stack
+    // TODO rewrite without recursion using a stack
     destroyTree(this->root);
 }
 
@@ -139,8 +140,8 @@ BLNode* Beachline::rotateLeft(BLNode* t) {
     u->parent = t->parent;
     t->parent = u;
 
-    t->height = std::max(t->lNode->height,t->rNode->height) + 1;
-    u->height = std::max(t->rNode->height,t->height) + 1;
+    t->height = std::max(height(t->lNode),height(t->rNode)) + 1;
+    u->height = std::max(height(t->rNode),height(t)) + 1;
 
     return u;
 }
@@ -162,8 +163,8 @@ BLNode* Beachline::rotateRight(BLNode* t) {
     u->parent = t->parent;
     t->parent = u;
 
-    t->height = std::max(t->lNode->height,t->rNode->height) + 1;
-    u->height = std::max(u->lNode->height,t->height) + 1;
+    t->height = std::max(height(t->lNode),height(t->rNode)) + 1;
+    u->height = std::max(height(u->lNode),height(t)) + 1;
     return u;
 }
 
@@ -173,7 +174,7 @@ BLNode* Beachline::doubleRotateRight(BLNode* t) {
 }
 
 BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
-    if(t == NULL) {
+    if(t == nullptr) {
         t = node;
         t->parent = par;
     } else if(node->computeIntersection(sweeplineY)
@@ -181,31 +182,36 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
 
         t->lNode = insert(node,t->lNode,t);
 
-        if(t->lNode->height - t->rNode->height == 2) {
+        if(height(t->lNode) - height(t->rNode) == 2) {
+
             if(node->computeIntersection(sweeplineY)
              < t->computeIntersection(sweeplineY)) {
                 t = rotateRight(t);
             } else {
                 t = doubleRotateRight(t);
             }
+
         }
 
     } else {
 
         t->rNode = insert(node,t->rNode,t);
 
-        if(t->rNode->height - t->lNode->height == 2) {
+        if(height(t->rNode) - height(t->lNode) == 2) {
+
             if(node->computeIntersection(sweeplineY)
              > t->computeIntersection(sweeplineY)) {
                 t = rotateLeft(t);
             } else {
                 t = doubleRotateLeft(t);
             }
+
         }
 
     }
 
-    t->height = std::max(t->lNode->height,t->rNode->height) + 1;
+    t->height = std::max(height(t->lNode),height(t->rNode)) + 1;
+
     return t;
 }
 
@@ -227,9 +233,13 @@ BLNode* Beachline::insert(Event* e1, Event* e2) {
     e->sibling->sibling = e;
 
     node->setEdge(e);
-    this->insert(node,root,nullptr); // root is null, so this node is made the root
+    insert(node,root,NULL); // root is null, so this node is made the root
 
     return node;
+}
+
+BLNode* Beachline::findMin() const {
+    return findMin(root);
 }
 
 BLNode* Beachline::findMin(BLNode* n) const {
@@ -327,19 +337,19 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
         return t;
     }
 
-    t->height = std::max(t->lNode->height,t->rNode->height);
+    t->height = std::max(height(t->lNode),height(t->rNode));
 
     // Balancing Checks
 
-    if(t->lNode->height - t->rNode->height == 2) {
+    if(height(t->lNode) - height(t->rNode) == 2) {
 
-        if(t->lNode->lNode->height - t->lNode->rNode->height == 1) {
+        if(height(t->lNode->lNode) - height(t->lNode->rNode) == 1) {
             return rotateLeft(t);
         } else {
             return doubleRotateLeft(t);
         }
-    } else if(t->rNode->height - t->lNode->height == 2) {
-        if(t->rNode->rNode->height - t->rNode->lNode->height == 1) {
+    } else if(height(t->rNode) - height(t->lNode) == 2) {
+        if(height(t->rNode->rNode) - height(t->rNode->lNode) == 1) {
             return rotateRight(t);
         } else{
             doubleRotateRight(t);
@@ -348,3 +358,6 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
     return t;
 }
 
+double Beachline::height(BLNode* n) {
+    return n == NULL ? -1 : n->height;
+}

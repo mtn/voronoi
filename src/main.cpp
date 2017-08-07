@@ -98,7 +98,9 @@ int main(int argc, char** argv) {
     }
 
     sweeplineY = 104;
-    /* std::cout << "sweepline " << sweeplineY << std::endl; */
+    BLNode* min = bl->findMin();
+    cout << "made it here" << endl;
+    cout << min->getBreakpoint()->first->x << endl;
 
 
 
