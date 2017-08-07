@@ -26,7 +26,9 @@ typedef struct {
     Point* p1;
     Point* p2;
     Point* p3;
-Circle* c;
+
+    Circle* c;
+
     BLNode* node;
 } CircleEvent;
 
@@ -81,11 +83,9 @@ class BLNode {
         BLNode* lNode;
         BLNode* rNode;
         BLNode* parent;
+        int height;
 
         NodeColor color;
-
-    protected:
-        static BLNode* makeSentinel();
 
     private:
         // TODO use unions to enforce that nothing can exist simultaneously with a point
@@ -102,23 +102,14 @@ class BLNode {
 
 };
 
-/* Defines a modified RB tree that supports dynamic keys (which is fine here * because the order of parabolas along the beachline being encoded is
- * invariant). */
-
-// BLNodes are compared by the x coordinate of their breakpoints
-struct CompareBLNode {
-    bool operator()(const BLNode* b1, const BLNode* b2) const {
-        return b1->computeIntersection(sweeplineY)
-            <= b2->computeIntersection(sweeplineY);
-    }
-};
-
 /*
- * The beachline is implemented as a RB tree that doesn't explicitly
+ * The beachline is implemented as a AVL tree that doesn't explicitly
  * store keys. Rather, they are computed dynamically each time there is
  * an insertion into the tree. Normally, having keys that change (as the
  * x positions of breakpoints do) would be problematic. Because ordering
- * is invariant in this problem, however, this is not a concern.
+ * is invariant in this problem, however, this is not a concern. Aside
+ * from this, the only difference from a vanilla avl tree is that duplicates
+ * are supported.
  */
 // TODO handlesite should check and manage the first case instead of main
 class Beachline {
@@ -126,37 +117,36 @@ class Beachline {
         Beachline(Event* e1, Event* e2);
         ~Beachline();
 
-        void destroyTree();
-
-        BLNode* insert(Point* p);
-
-        void deleteNode(BLNode* node);
-
         BLNode* getPredecessor(BLNode* node) const;
         BLNode* getSuccessor(BLNode* node) const;
+
+        void destroyTree();
+        BLNode* remove(BLNode* node);
+
+        BLNode* findMin() const;
 
         void handleCircleEvent(CircleEvent* ce);
         void handleSiteEvent(SiteEvent* pe);
 
     protected:
-        void rotateLeft(BLNode* x);
-        void rotateRight(BLNode* y);
+        BLNode* rotateLeft(BLNode* node);
+        BLNode* doubleRotateLeft(BLNode* node);
+        BLNode* rotateRight(BLNode* node);
+        BLNode* doubleRotateRight(BLNode* node);
+
+        double height(BLNode* n);
 
         BLNode* root;
-        BLNode* nil;
-
 
     private:
-        void insert(BLNode* z);
-        void insertFixup(BLNode* z);
-
-        void destroyTree(BLNode* x);
-        void deleteFixup(BLNode* x);
-
-        BLNode* insert(Point* p, BLNode* node);
-        BLNode* insert(Breakpoint* bp, BLNode* node);
+        BLNode* insert(BLNode* node, BLNode* t, BLNode* par);
         BLNode* insert(Event* e1, Event* e2);
 
+        BLNode* remove(BLNode* node, BLNode* temp);
+        void destroyTree(BLNode* x);
+
+        BLNode* findMin(BLNode* n) const;
+        BLNode* findMax(BLNode* n) const;
 };
 
 
