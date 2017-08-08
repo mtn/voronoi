@@ -116,7 +116,6 @@ class Beachline {
         // Tree operations
         void destroyTree();
         void remove(BLNode* node);
-        void insert(Point* p);
 
         BLNode* findMin() const;
         BLNode* getPredecessor(BLNode* node) const;
@@ -132,6 +131,7 @@ class Beachline {
         void destroyTree(BLNode* x);
         BLNode* remove(BLNode* node, BLNode* temp);
 
+        void insert(Point* p);
         BLNode* insert(BLNode* node);
         BLNode* insert(Event* e1, Event* e2);
         BLNode* insert(BLNode* node, BLNode* t, BLNode* par);

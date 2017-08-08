@@ -5,6 +5,8 @@
 #include <cmath>
 #include <stack>
 
+#include <iostream>
+using namespace std;
 
 double getEventPriority(const Event* e) {
     if(e->type == PointE) {
@@ -15,38 +17,45 @@ double getEventPriority(const Event* e) {
 }
 
 
+BLNode::BLNode() {
+    p = nullptr;
+    breakpoint = nullptr;
+    edge = nullptr;
+    lEvent = rEvent = nullptr;
+    lNode = rNode = parent = nullptr;
+}
+
 BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) {
-    this->p = nullptr;
-    this->breakpoint = b;
-    this->edge = e;
-    this->lEvent = nullptr;
-    this->rEvent = nullptr;
-    this->lNode = this->rNode = this->parent = nullptr;
+    p = nullptr;
+    breakpoint = b;
+    edge = e;
+    lEvent = rEvent = nullptr;
+    lNode = rNode = parent = nullptr;
 }
 
 BLNode::BLNode(Breakpoint* b) {
-    this->p = nullptr;
-    this->breakpoint = b;
-    this->edge = new DCEL_Edge;
-    this->lNode = this->rNode = this->parent = nullptr;
+    p = nullptr;
+    breakpoint = b;
+    edge = new DCEL_Edge;
+    lNode = rNode = parent = nullptr;
 }
 
 // Used only in the first case (add a single leaf)
 BLNode::BLNode(Point* p) {
     this->p = p;
-    this->breakpoint = nullptr;
-    this->edge = nullptr;
-    this->lEvent = nullptr;
-    this->rEvent = nullptr;
-    this->lNode = this->rNode = this->parent = nullptr;
+    breakpoint = nullptr;
+    edge = nullptr;
+    lEvent = nullptr;
+    rEvent = nullptr;
+    lNode = rNode = parent = nullptr;
 }
 
 void BLNode::setBreakpoint(Breakpoint* bp) {
-    this->p = nullptr;
-    this->breakpoint = bp;
+    p = nullptr;
+    breakpoint = bp;
 }
 Breakpoint* BLNode::getBreakpoint() const {
-    return this->breakpoint;
+    return breakpoint;
 }
 
 void BLNode::setEdge(DCEL_Edge* edge) {
@@ -54,7 +63,7 @@ void BLNode::setEdge(DCEL_Edge* edge) {
 }
 
 DCEL_Edge* BLNode::getEdge() const {
-    return this->edge;
+    return edge;
 }
 
 void BLNode::setLEvent(CircleEvent* lEvent) {
@@ -62,7 +71,7 @@ void BLNode::setLEvent(CircleEvent* lEvent) {
 }
 
 CircleEvent* BLNode::getLEvent() const {
-    return this->lEvent;
+    return lEvent;
 }
 
 void BLNode::setREvent(CircleEvent* rEvent) {
@@ -70,11 +79,11 @@ void BLNode::setREvent(CircleEvent* rEvent) {
 }
 
 CircleEvent* BLNode::getREvent() const {
-    return this->rEvent;
+    return rEvent;
 }
 
 Point* BLNode::getPoint() const {
-    return this->p;
+    return p;
 }
 
 double BLNode::computeIntersection(double sweeplineY) const {
@@ -82,30 +91,34 @@ double BLNode::computeIntersection(double sweeplineY) const {
     // As a hack to get site event insertion of points to work, and to allow insertion of
     // two breakpoints that appear to be at the same location, points are shited slightly
     Point* p;
-    if((p = this->getPoint())) {
-        return p->x + 0.00001;
+    if((p = getPoint())) {
+        return p->x;
     }
 
-    if(this->getBreakpoint()->first->y == sweeplineY) {
-        return this->getBreakpoint()->first->x;
+    if(getBreakpoint()->first->y == sweeplineY) {
+        /* cout << "RETURNING bc we're on the sweepline" << endl; */
+        return getBreakpoint()->first->x;
     }
-    if(this->getBreakpoint()->second->y == sweeplineY) {
-        return this->getBreakpoint()->second->x;
+    if(getBreakpoint()->second->y == sweeplineY) {
+        /* cout << "RETURNING bc we're on the sweepline" << endl; */
+        return getBreakpoint()->second->x;
     }
 
-    double ay = this->getBreakpoint()->first->y - sweeplineY;
-    double bx = this->getBreakpoint()->second->x - this->getBreakpoint()->first->x;
-    double by = this->getBreakpoint()->second->y - sweeplineY;
+    /* cout << "made it to here in compuateInterxc " << this << endl; */
+
+    double ay = getBreakpoint()->first->y - sweeplineY;
+    double bx = getBreakpoint()->second->x - getBreakpoint()->first->x;
+    double by = getBreakpoint()->second->y - sweeplineY;
 
     if(ay == by) {
-        return (this->getBreakpoint()->first->x + this->getBreakpoint()->second->x) / 2;
+        return (getBreakpoint()->first->x + getBreakpoint()->second->x) / 2;
     }
 
     double shiftedIntersect = (ay*bx + sqrt(ay*by*(pow(ay-by,2) + pow(bx,2))))/(ay-by);
 
     // TODO handle problem case of small denominators
 
-    return shiftedIntersect + this->getBreakpoint()->first->x;
+    return shiftedIntersect + getBreakpoint()->first->x;
 }
 
 
@@ -118,11 +131,11 @@ Beachline::Beachline(Event* e1, Event* e2) {
 
 Beachline::~Beachline() {
     // TODO rewrite without recursion using a stack
-    destroyTree(this->root);
+    destroyTree(root);
 }
 
 void Beachline::destroyTree(BLNode* node) {
-    if(node != NULL) {
+    if(node != nullptr) {
         destroyTree(node->lNode);
         destroyTree(node->rNode);
         delete node;
@@ -181,6 +194,8 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
         t->height = 0;
         t->lNode = t->rNode = nullptr;
         t->parent = par;
+        /* cout << "Inserted node with address " << node << endl; */
+        /* if(node->getBreakpoint()) cout << "The node HAS a breakpoint" << endl; */
     } else if(node->computeIntersection(sweeplineY)
             < t->computeIntersection(sweeplineY)) {
 
@@ -219,7 +234,6 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
     return t;
 }
 
-// Just to clarify node insertion
 BLNode* Beachline::insert(BLNode* node) {
     return insert(node,root,nullptr);
 }
@@ -249,15 +263,50 @@ BLNode* Beachline::insert(Event* e1, Event* e2) {
 }
 
 void Beachline::insert(Point* p) {
-    root = insert(new BLNode(p));
+    Breakpoint* bp;
+    BLNode *pred, *succ;
+    BLNode *n1, *n2;
+
+    n1 = new BLNode(p);
+    n2 = nullptr;
+    root = insert(n1);
+
+    pred = getPredecessor(n1);
+    if(pred) {
+        bp = new Breakpoint;
+        /* cout << "pred" << pred << endl; */
+        /* cout << "breakpoint" << pred->getBreakpoint() << endl; */
+        *bp = make_pair(pred->getBreakpoint()->second,p);
+        n1->setBreakpoint(bp);
+    }
+
+    succ = getSuccessor(n1);
+    if(succ) {
+        bp = new Breakpoint;
+        *bp = make_pair(p,succ->getBreakpoint()->first);
+
+        if(n1->getBreakpoint() != nullptr) {
+            n2 = new BLNode;
+            n2->setBreakpoint(bp);
+        } else {
+            n1->setBreakpoint(bp);
+        }
+    }
+
+    if(n1->getBreakpoint() == nullptr) {
+        remove(n1);
+    }
+    if(n2 != nullptr) {
+        insert(n2);
+    }
+
 }
 
 BLNode* Beachline::findMin() const {
     return findMin(root);
 }
 
-BLNode* Beachline::findMin(BLNode* n) const {
-    if(n == nullptr) {
+BLNode* Beachline::findMin(BLNode* n) const { if(n == nullptr) {
         return nullptr;
     } else if(n->lNode == nullptr){
         return n;
@@ -292,7 +341,7 @@ BLNode* Beachline::getSuccessor(BLNode* n) const {
 
 BLNode* Beachline::getPredecessor(BLNode* n) const {
     if(n->lNode != nullptr) {
-        return findMax(n->rNode);
+        return findMax(n->lNode);
     }
 
     BLNode* p = n->parent;
@@ -384,7 +433,8 @@ double Beachline::height(BLNode* n) {
 }
 
 void Beachline::handleSiteEvent(SiteEvent* se) {
-
+    sweeplineY = se->y;
+    insert(se);
 }
 
 void Beachline::handleCircleEvent(CircleEvent* ce) {

@@ -72,6 +72,7 @@ int main(int argc, char** argv) {
 
     /* g->close(); */
 
+    int count = 0;
     bool first = true;
     Event *e1, *e2;
     Beachline* bl;
@@ -87,20 +88,22 @@ int main(int argc, char** argv) {
             e2 = nullptr;
             first = false;
         } else {
-            bl->handleSiteEvent(e1->se);
+            if(count < 5) {
+                count++;
+                bl->handleSiteEvent(e1->se);
+            }
         }
 
     }
 
-
-    BLNode* min;
-    sweeplineY = boundY;
-    min = bl->findMin();
-    while(min) {
-        cout << min->computeIntersection(sweeplineY) << endl;
-        min = bl->getSuccessor(min);
-    }
-    cout << endl;
+/*     BLNode* min; */
+/*     sweeplineY = boundY; */
+/*     min = bl->findMin(); */
+/*     while(min) { */
+/*         cout << min->computeIntersection(sweeplineY) << endl; */
+/*         min = bl->getSuccessor(min); */
+/*     } */
+/*     cout << endl; */
 
 
 
