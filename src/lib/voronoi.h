@@ -126,21 +126,20 @@ class Beachline {
         void handleCircleEvent(CircleEvent* ce);
         void handleSiteEvent(SiteEvent* pe);
 
+    private:
         BLNode* root;
 
-    protected:
-        BLNode* rotateLeft(BLNode* node);
-        BLNode* doubleRotateLeft(BLNode* node);
-        BLNode* rotateRight(BLNode* node);
-        BLNode* doubleRotateRight(BLNode* node);
-
-    private:
         void destroyTree(BLNode* x);
         BLNode* remove(BLNode* node, BLNode* temp);
 
         BLNode* insert(BLNode* node);
         BLNode* insert(Event* e1, Event* e2);
         BLNode* insert(BLNode* node, BLNode* t, BLNode* par);
+
+        BLNode* rotateLeft(BLNode* node);
+        BLNode* doubleRotateLeft(BLNode* node);
+        BLNode* rotateRight(BLNode* node);
+        BLNode* doubleRotateRight(BLNode* node);
 
         BLNode* findMin(BLNode* n) const;
         BLNode* findMax(BLNode* n) const;

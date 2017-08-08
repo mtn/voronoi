@@ -87,8 +87,7 @@ int main(int argc, char** argv) {
             e2 = nullptr;
             first = false;
         } else {
-
-            bl->insert(e1->se);
+            bl->handleSiteEvent(e1->se);
         }
 
     }

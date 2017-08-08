@@ -383,3 +383,11 @@ double Beachline::height(BLNode* n) {
     return n == NULL ? -1 : n->height;
 }
 
+void Beachline::handleSiteEvent(SiteEvent* se) {
+
+}
+
+void Beachline::handleCircleEvent(CircleEvent* ce) {
+
+}
+
