@@ -15,8 +15,6 @@ double getEventPriority(const Event* e) {
 
 
 
-BLNode::BLNode() { }
-
 BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) {
     this->p = nullptr;
     this->breakpoint = b;
@@ -181,8 +179,7 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
         t->lNode = t->rNode = nullptr;
         t->parent = par;
     } else if(node->computeIntersection(sweeplineY)
-            < t->computeIntersection(sweeplineY)){
-
+            < t->computeIntersection(sweeplineY)) {
 
         t->lNode = insert(node,t->lNode,t);
 
@@ -216,7 +213,6 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
 
     t->height = std::max(height(t->lNode),height(t->rNode)) + 1;
 
-    t->parent = nullptr;
     return t;
 }
 
