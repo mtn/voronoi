@@ -5,6 +5,7 @@
 #include <cmath>
 #include <stack>
 
+
 double getEventPriority(const Event* e) {
     if(e->type == PointE) {
         return e->se->y;
@@ -14,19 +15,20 @@ double getEventPriority(const Event* e) {
 }
 
 
-
 BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) {
     this->p = nullptr;
     this->breakpoint = b;
     this->edge = e;
     this->lEvent = nullptr;
     this->rEvent = nullptr;
+    this->lNode = this->rNode = this->parent = nullptr;
 }
 
 BLNode::BLNode(Breakpoint* b) {
     this->p = nullptr;
     this->breakpoint = b;
     this->edge = new DCEL_Edge;
+    this->lNode = this->rNode = this->parent = nullptr;
 }
 
 // Used only in the first case (add a single leaf)
@@ -36,6 +38,7 @@ BLNode::BLNode(Point* p) {
     this->edge = nullptr;
     this->lEvent = nullptr;
     this->rEvent = nullptr;
+    this->lNode = this->rNode = this->parent = nullptr;
 }
 
 void BLNode::setBreakpoint(Breakpoint* bp) {
@@ -216,6 +219,11 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
     return t;
 }
 
+// Just to clarify node insertion
+BLNode* Beachline::insert(BLNode* node) {
+    return insert(node,root,nullptr);
+}
+
 BLNode* Beachline::insert(Event* e1, Event* e2) {
     Breakpoint* bp;
     BLNode* node;
@@ -235,9 +243,13 @@ BLNode* Beachline::insert(Event* e1, Event* e2) {
     e->sibling->sibling = e;
 
     node->setEdge(e);
-    root = insert(node,root,NULL); // root is null, so this node is made the root
+    root = insert(node);
 
     return node;
+}
+
+void Beachline::insert(Point* p) {
+    root = insert(new BLNode(p));
 }
 
 BLNode* Beachline::findMin() const {

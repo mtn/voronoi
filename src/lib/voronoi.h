@@ -111,21 +111,21 @@ class BLNode {
 class Beachline {
     public:
         Beachline(Event* e1, Event* e2);
-        Beachline();
         ~Beachline();
 
+        // Tree operations
+        void destroyTree();
+        void remove(BLNode* node);
+        void insert(Point* p);
+
+        BLNode* findMin() const;
         BLNode* getPredecessor(BLNode* node) const;
         BLNode* getSuccessor(BLNode* node) const;
 
-        void destroyTree();
-        void remove(BLNode* node);
-
-        BLNode* findMin() const;
-
+        // Beachline operations
         void handleCircleEvent(CircleEvent* ce);
         void handleSiteEvent(SiteEvent* pe);
 
-        BLNode* insert(Event* e1, Event* e2);
         BLNode* root;
 
     protected:
@@ -134,16 +134,17 @@ class Beachline {
         BLNode* rotateRight(BLNode* node);
         BLNode* doubleRotateRight(BLNode* node);
 
-        double height(BLNode* n);
-
-
     private:
-        BLNode* insert(BLNode* node, BLNode* t, BLNode* par);
-
-        BLNode* remove(BLNode* node, BLNode* temp);
         void destroyTree(BLNode* x);
+        BLNode* remove(BLNode* node, BLNode* temp);
+
+        BLNode* insert(BLNode* node);
+        BLNode* insert(Event* e1, Event* e2);
+        BLNode* insert(BLNode* node, BLNode* t, BLNode* par);
 
         BLNode* findMin(BLNode* n) const;
         BLNode* findMax(BLNode* n) const;
+
+        double height(BLNode* n);
 };
 
