@@ -115,6 +115,7 @@ class BLNode {
 class Beachline {
     public:
         Beachline(Event* e1, Event* e2);
+        Beachline();
         ~Beachline();
 
         BLNode* getPredecessor(BLNode* node) const;
@@ -129,6 +130,7 @@ class Beachline {
         void handleSiteEvent(SiteEvent* pe);
 
         BLNode* insert(Event* e1, Event* e2);
+        BLNode* root;
 
     protected:
         BLNode* rotateLeft(BLNode* node);
@@ -138,7 +140,6 @@ class Beachline {
 
         double height(BLNode* n);
 
-        BLNode* root;
 
     private:
         BLNode* insert(BLNode* node, BLNode* t, BLNode* par);

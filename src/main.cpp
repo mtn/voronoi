@@ -17,13 +17,6 @@
 
 #include <stdio.h>
 
-#define DEBUG
-#ifdef DEBUG
-# define DEBUG_PRINT(x) printf(x)
-#else
-# define DEBUG_PRINT(x) do {} while (0)
-#endif
-
 using namespace std;
 
 double sweeplineY; // This might only be safe to update on sevents and after cevents
@@ -89,7 +82,6 @@ int main(int argc, char** argv) {
             e2 = pq.top();
             pq.pop();
         if(first) {
-
             bl = new Beachline(e1,e2);
             first = false;
         } else {
@@ -100,7 +92,7 @@ int main(int argc, char** argv) {
         e2 = nullptr;
     }
 
-    sweeplineY = 103;
+    sweeplineY = 104;
     BLNode* min = bl->findMin();
     while(min) {
         cout << min->computeIntersection(sweeplineY) << " ";

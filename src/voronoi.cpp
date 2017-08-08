@@ -165,6 +165,7 @@ BLNode* Beachline::rotateRight(BLNode* t) {
 
     t->height = std::max(height(t->lNode),height(t->rNode)) + 1;
     u->height = std::max(height(u->lNode),height(t)) + 1;
+
     return u;
 }
 
@@ -175,20 +176,20 @@ BLNode* Beachline::doubleRotateRight(BLNode* t) {
 
 BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
     if(t == nullptr) {
-        cout << "placed node" << endl;
         t = node;
+        t->height = 0;
+        t->lNode = t->rNode = nullptr;
         t->parent = par;
     } else if(node->computeIntersection(sweeplineY)
             < t->computeIntersection(sweeplineY)){
-        cout << "comparison: " << node->computeIntersection(sweeplineY) << " " << t->computeIntersection(sweeplineY) << endl;
-        cout << "putting it somewhere left, sweepline: " << sweeplineY << endl;
+
 
         t->lNode = insert(node,t->lNode,t);
 
         if(height(t->lNode) - height(t->rNode) == 2) {
 
             if(node->computeIntersection(sweeplineY)
-             < t->computeIntersection(sweeplineY)) {
+             < t->lNode->computeIntersection(sweeplineY)) {
                 t = rotateRight(t);
             } else {
                 t = doubleRotateRight(t);
@@ -197,15 +198,13 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
         }
 
     } else {
-        cout << "comparison: " << node->computeIntersection(sweeplineY) << " " << t->computeIntersection(sweeplineY) << endl;
-        cout << "putting it somewhere right, sweepline: " << sweeplineY << endl;
 
         t->rNode = insert(node,t->rNode,t);
 
         if(height(t->rNode) - height(t->lNode) == 2) {
 
             if(node->computeIntersection(sweeplineY)
-             > t->computeIntersection(sweeplineY)) {
+             > t->rNode->computeIntersection(sweeplineY)) {
                 t = rotateLeft(t);
             } else {
                 t = doubleRotateLeft(t);
@@ -217,6 +216,7 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
 
     t->height = std::max(height(t->lNode),height(t->rNode)) + 1;
 
+    t->parent = nullptr;
     return t;
 }
 
@@ -239,7 +239,7 @@ BLNode* Beachline::insert(Event* e1, Event* e2) {
     e->sibling->sibling = e;
 
     node->setEdge(e);
-    insert(node,root,NULL); // root is null, so this node is made the root
+    root = insert(node,root,NULL); // root is null, so this node is made the root
 
     return node;
 }
