@@ -204,7 +204,7 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
         if(height(t->rNode) - height(t->lNode) == 2) {
 
             if(node->computeIntersection(sweeplineY)
-             > t->rNode->computeIntersection(sweeplineY)) {
+             >= t->rNode->computeIntersection(sweeplineY)) {
                 t = rotateLeft(t);
             } else {
                 t = doubleRotateLeft(t);

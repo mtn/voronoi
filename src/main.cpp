@@ -92,10 +92,10 @@ int main(int argc, char** argv) {
         e2 = nullptr;
     }
 
-    sweeplineY = 104;
+    sweeplineY = boundY;
     BLNode* min = bl->findMin();
     while(min) {
-        cout << min->computeIntersection(sweeplineY) << " ";
+        cout << min->computeIntersection(sweeplineY) << endl;
         min = bl->getSuccessor(min);
     }
     cout << endl;
