@@ -83,26 +83,26 @@ double BLNode::computeIntersection(double sweeplineY) const {
         return p->x + 0.00001;
     }
 
-    if(std::get<0>(*this->getBreakpoint())->y == sweeplineY) {
-        return std::get<0>(*this->getBreakpoint())->x;
+    if(this->getBreakpoint()->first->y == sweeplineY) {
+        return this->getBreakpoint()->first->x;
     }
-    if (std::get<1>(*this->getBreakpoint())->y == sweeplineY) {
-        return std::get<1>(*this->getBreakpoint())->x;
+    if(this->getBreakpoint()->second->y == sweeplineY) {
+        return this->getBreakpoint()->second->x;
     }
 
-    double ay = std::get<0>(*this->getBreakpoint())->y - sweeplineY;
-    double bx = std::get<1>(*this->getBreakpoint())->x - std::get<0>(*this->getBreakpoint())->x;
-    double by = std::get<1>(*this->getBreakpoint())->y - sweeplineY;
+    double ay = this->getBreakpoint()->first->y - sweeplineY;
+    double bx = this->getBreakpoint()->second->x - this->getBreakpoint()->first->x;
+    double by = this->getBreakpoint()->second->y - sweeplineY;
 
     if(ay == by) {
-        return (std::get<0>(*this->getBreakpoint())->x + std::get<1>(*this->getBreakpoint())->x) / 2;
+        return (this->getBreakpoint()->first->x + this->getBreakpoint()->second->x) / 2;
     }
 
     double shiftedIntersect = (ay*bx + sqrt(ay*by*(pow(ay-by,2) + pow(bx,2))))/(ay-by);
 
     // TODO handle problem case of small denominators
 
-    return shiftedIntersect + std::get<0>(*this->getBreakpoint())->x;
+    return shiftedIntersect + this->getBreakpoint()->first->x;
 }
 
 
@@ -292,8 +292,8 @@ BLNode* Beachline::getPredecessor(BLNode* n) const {
     return p;
 }
 
-BLNode* Beachline::remove(BLNode* n) {
-    return remove(n,root);
+void Beachline::remove(BLNode* n) {
+    root = remove(n,root);
 }
 
 // Fails if the node requested for removal is not in tree
@@ -309,7 +309,7 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
             < t->computeIntersection(sweeplineY)) {
         t->lNode = remove(n,t->lNode);
     } else if(n->computeIntersection(sweeplineY)
-            > t->computeIntersection(sweeplineY)) {
+            >= t->computeIntersection(sweeplineY)) {
         t->rNode = remove(n,t->rNode);
     }
 
@@ -321,10 +321,12 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
         t->parent = temp->parent;
         t->lNode = temp->lNode;
         t->rNode = temp->rNode;
+        delete temp;
     }
 
     // Element found with <2 children
-    // If there's a child, it's shifted up. Otherwise, it's a leaf.
+    // If there's a child, it's shifted up. Otherwise, we're at a leaf and removal
+    // is trivial.
     else {
         temp = t;
         if(t->lNode == nullptr) {
@@ -334,6 +336,7 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
             t->lNode->parent = t->parent;
             t = t->lNode;
         }
+        delete temp;
     }
     if(t == nullptr) {
         return t;
@@ -350,16 +353,21 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
         } else {
             return doubleRotateLeft(t);
         }
+
     } else if(height(t->rNode) - height(t->lNode) == 2) {
+
         if(height(t->rNode->rNode) - height(t->rNode->lNode) == 1) {
             return rotateRight(t);
         } else{
-            doubleRotateRight(t);
+            return doubleRotateRight(t);
         }
+
     }
+
     return t;
 }
 
 double Beachline::height(BLNode* n) {
     return n == NULL ? -1 : n->height;
 }
+

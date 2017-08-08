@@ -6,12 +6,8 @@
 #include "circle.h"
 #include "dcel.h"
 
-
 #include <utility>
-#include <set>
 
-#include <iostream>
-using namespace std;
 
 enum EventType       { CircleE, PointE };
 enum NodeColor       { Red, Black };
@@ -122,7 +118,7 @@ class Beachline {
         BLNode* getSuccessor(BLNode* node) const;
 
         void destroyTree();
-        BLNode* remove(BLNode* node);
+        void remove(BLNode* node);
 
         BLNode* findMin() const;
 
@@ -150,5 +146,4 @@ class Beachline {
         BLNode* findMin(BLNode* n) const;
         BLNode* findMax(BLNode* n) const;
 };
-
 
