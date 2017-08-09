@@ -10,11 +10,12 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
-#include <queue>
 
 using namespace std;
 
 double sweeplineY; // This might only be safe to update on sevents and after cevents
+EventQueue eq;
+
 
 template<typename T> void print_queue(T& q) {
     while(!q.empty()) {
@@ -32,7 +33,6 @@ template<typename T> void print_queue(T& q) {
 
 int main(int argc, char** argv) {
     // TODO Implement a bounded pq that supports random deletion
-    std::priority_queue<Event*,std::vector<Event*>,CompareEvent> pq;
 
     double boundX = 0, boundY = 0;
     if(argc > 1) {
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
             tmp->type = PointE;
             tmp->se = new Point(a,b);
 
-            pq.push(tmp);
+            eq.push(tmp);
         }
 
         boundX = ceil(boundX);
@@ -71,14 +71,14 @@ int main(int argc, char** argv) {
     bool first = true;
     Event *e1, *e2;
     Beachline* bl;
-    while(!pq.empty()) {
-        e1 = pq.top();
-        pq.pop();
+    while(!eq.empty()) {
+        e1 = eq.top();
+        eq.pop();
 
         // TODO handle degenerate case where the first two sites have the same y
         if(first) {
-            e2 = pq.top();
-            pq.pop();
+            e2 = eq.top();
+            eq.pop();
             bl = new Beachline(e1,e2);
 
             e2 = nullptr;

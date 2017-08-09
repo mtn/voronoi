@@ -142,6 +142,10 @@ Beachline::~Beachline() {
     destroyTree(root);
 }
 
+bool Beachline::isEmpty() const {
+    return (bool)root;
+}
+
 void Beachline::destroyTree(BLNode* node) {
     if(node != nullptr) {
         destroyTree(node->lNode);
@@ -269,7 +273,7 @@ BLNode* Beachline::insert(Event* e1, Event* e2) {
     return node;
 }
 
-void Beachline::insert(Point* p) {
+NodePair* Beachline::insert(Point* p) {
     Breakpoint* bp;
     BLNode *pred, *succ;
     BLNode *n1, *n2;
@@ -305,13 +309,18 @@ void Beachline::insert(Point* p) {
         insert(n2);
     }
 
+    NodePair* nodes = new NodePair;
+    *nodes = std::make_pair(n1,n2);
+
+    return nodes;
 }
 
 BLNode* Beachline::findMin() const {
     return findMin(root);
 }
 
-BLNode* Beachline::findMin(BLNode* n) const { if(n == nullptr) {
+BLNode* Beachline::findMin(BLNode* n) const {
+    if(n == nullptr) {
         return nullptr;
     } else if(n->lNode == nullptr){
         return n;
@@ -439,36 +448,43 @@ double Beachline::height(BLNode* n) {
 
 void Beachline::handleSiteEvent(SiteEvent* se) {
     sweeplineY = se->y;
-    insert(se);
+    NodePair* nodes = insert(se);
+
+    evaluateCircleEventCandidate(nodes);
     // add 2 half edges
-    // check for circle events. add any that are found to pq
+    delete nodes;
 }
 
 void Beachline::handleCircleEvent(CircleEvent* ce) {
     sweeplineY = ce->c->center->y + ce->c->radius;
+
+    if(ce->deleted) {
+        return;
+    }
+
     // add vertex to appropriate edge into dcel
     // delete
 }
 
 // Enforces that b2 should be the successor of b1
-CircleEvent* Beachline::handleCircleEventCandidate(BLNode* b1, BLNode* b2) const {
+CircleEvent* Beachline::evaluateCircleEventCandidate(NodePair* n) const {
 
-    if(getSuccessor(b1) != b2) {
+    if(getSuccessor(n->first) != n->second) {
         return nullptr;
     }
 
-    const Point* x = b1->getBreakpoint()->first;
-    const Point* y = b1->getBreakpoint()->second;
-    const Point* z = b2->getBreakpoint()->first;
+    const Point* x = n->first->getBreakpoint()->first;
+    const Point* y = n->first->getBreakpoint()->second;
+    const Point* z = n->second->getBreakpoint()->first;
     Circle* c = Circle::computeCircumcircle(x,y,z);
 
     if(c->center->y + c->radius < sweeplineY) {
         return nullptr;
     }
 
-    CircleEvent* ce = new CircleEvent(c,b1,b2);
-    b1->rEvent = ce;
-    b2->lEvent = ce;
+    CircleEvent* ce = new CircleEvent(c,n->first,n->second);
+    n->first->rEvent = ce;
+    n->second->lEvent = ce;
 
     return ce;
 }

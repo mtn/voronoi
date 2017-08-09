@@ -7,6 +7,7 @@
 #include "dcel.h"
 
 #include <utility>
+#include <queue>
 
 
 enum EventType       { CircleE, PointE };
@@ -49,6 +50,8 @@ struct CompareEvent {
         return e1Y > e2Y;
     }
 };
+typedef std::priority_queue<Event*,std::vector<Event*>,CompareEvent> EventQueue;
+extern EventQueue eq;
 
 
 typedef std::pair<const Point*,const Point*> Breakpoint;
@@ -99,6 +102,7 @@ class BLNode {
         CircleEvent* rEvent;
 
 };
+typedef std::pair<BLNode*,BLNode*> NodePair;
 
 /*
  * The beachline is implemented as a AVL tree that doesn't explicitly
@@ -109,7 +113,6 @@ class BLNode {
  * from this, the only difference from a vanilla avl tree is that duplicates
  * are supported.
  */
-// TODO handlesite should check and manage the first case instead of main
 class Beachline {
     public:
         Beachline(Event* e1, Event* e2);
@@ -118,6 +121,7 @@ class Beachline {
         void destroyTree();
         void remove(BLNode* node);
 
+        bool isEmpty() const;
         BLNode* findMin() const;
         BLNode* getPredecessor(BLNode* node) const;
         BLNode* getSuccessor(BLNode* node) const;
@@ -132,7 +136,7 @@ class Beachline {
         void destroyTree(BLNode* x);
         BLNode* remove(BLNode* node, BLNode* temp);
 
-        void insert(Point* p);
+        NodePair* insert(Point* p);
         BLNode* insert(BLNode* node);
         BLNode* insert(Event* e1, Event* e2);
         BLNode* insert(BLNode* node, BLNode* t, BLNode* par);
@@ -148,6 +152,6 @@ class Beachline {
         double height(BLNode* n);
 
         // Beachline operations
-        CircleEvent* handleCircleEventCandidate(BLNode* b1, BLNode* b2) const;
+        CircleEvent* evaluateCircleEventCandidate(NodePair* n) const;
 };
 
