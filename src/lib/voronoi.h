@@ -155,6 +155,6 @@ class Beachline {
         double height(BLNode* n);
 
         // Beachline operations
-        CircleEvent* evaluateCircleEventCandidate(NodePair* n) const;
+        void evaluateCircleEventCandidate(NodePair* n) const;
+        void pushEvent(Circle* c, BLNode* l, BLNode* r) const;
 };
-

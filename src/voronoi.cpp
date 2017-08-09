@@ -314,8 +314,6 @@ NodePair* Beachline::insert(Point* p) {
         bp = new Breakpoint;
         *bp = make_pair(succ->getBreakpoint()->first,p);
         n2->setBreakpoint(bp);
-    } else {
-        cout << "didnt' hav a pred or a succ" << endl;
     }
     root = insert(n2);
 
@@ -456,25 +454,9 @@ double Beachline::height(BLNode* n) {
 
 void Beachline::handleSiteEvent(SiteEvent* se) {
     sweeplineY = se->y;
-    cout << "inserting" << endl;
     NodePair* nodes = insert(se);
-    cout << "inserted" << endl;
 
-    cout << "evaluating cevent" << endl;
-    if(!nodes->first) {
-        if(nodes->second) {
-            nodes->first = getPredecessor(nodes->second);
-        } else {
-
-        }
-    }
-    CircleEvent* ce = evaluateCircleEventCandidate(nodes);
-    cout << "evaluated" << endl;
-    if(ce) {
-        Event* e = new Event(ce);
-        eq.push(e);
-        cout << "Pushed CE onto queue" << endl;
-    }
+    evaluateCircleEventCandidate(nodes);
 
     // add 2 half edges
     delete nodes;
@@ -492,25 +474,40 @@ void Beachline::handleCircleEvent(CircleEvent* ce) {
 }
 
 // Enforces that b2 should be the successor of b1
-CircleEvent* Beachline::evaluateCircleEventCandidate(NodePair* n) const {
+void Beachline::evaluateCircleEventCandidate(NodePair* n) const {
 
     if(getSuccessor(n->first) != n->second) {
-        return nullptr;
+        return;
     }
 
-    const Point* x = n->first->getBreakpoint()->first;
-    const Point* y = n->first->getBreakpoint()->second;
-    const Point* z = n->second->getBreakpoint()->first;
-    Circle* c = Circle::computeCircumcircle(x,y,z);
-
-    if(c->center->y + c->radius < sweeplineY) {
-        return nullptr;
+    BLNode* pred = getPredecessor(n->first);
+    if(pred) {
+        const Point* q = pred->getBreakpoint()->first;
+        const Point* r = n->first->getBreakpoint()->first;
+        const Point* s = n->first->getBreakpoint()->second;
+        Circle* c = Circle::computeCircumcircle(q,r,s);
+        pushEvent(c,n->first,pred);
     }
 
-    CircleEvent* ce = new CircleEvent(c,n->first,n->second);
-    n->first->rEvent = ce;
-    n->second->lEvent = ce;
+    BLNode* succ = getSuccessor(n->second);
+    if(succ) {
+        const Point* q = succ->getBreakpoint()->second;
+        const Point* r = n->second->getBreakpoint()->first;
+        const Point* s = n->second->getBreakpoint()->second;
+        Circle* c = Circle::computeCircumcircle(q,r,s);
+        pushEvent(c,succ,n->second);
+    }
+}
 
-    return ce;
+// l is the node that will take the event as it's lEvent, so the naming
+// is actually opposite ordering along the beachline
+void Beachline::pushEvent(Circle* c, BLNode* l, BLNode* r) const {
+    if(c->center->y + c->radius > sweeplineY) {
+        CircleEvent* ce = new CircleEvent(c,l,r);
+        l->lEvent = ce;
+        r->rEvent = ce;
+        eq.push(new Event(ce));
+        cout << "Pushed CE onto queue" << endl;
+    }
 }
 
