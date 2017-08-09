@@ -9,13 +9,25 @@
 using namespace std;
 
 double getEventPriority(const Event* e) {
-    if(e->type == PointE) {
+    if(e->type == SiteE) {
         return e->se->y;
     } else {
         return e->ce->c->center->y + e->ce->c->radius;
     }
 }
 
+
+Event::Event(CircleEvent* ce) {
+    type = CircleE;
+    this->ce = ce;
+    se = nullptr;
+}
+
+Event::Event(SiteEvent* se) {
+    type = SiteE;
+    this->se = se;
+    ce = nullptr;
+}
 
 CircleEvent::CircleEvent(Circle* c, BLNode* b1, BLNode* b2) {
     deleted = false;
@@ -278,40 +290,36 @@ NodePair* Beachline::insert(Point* p) {
     BLNode *pred, *succ;
     BLNode *n1, *n2;
 
+    NodePair* nodes = new NodePair;
     n1 = new BLNode(p);
-    n2 = nullptr;
+    n2 = new BLNode;
     root = insert(n1);
 
     pred = getPredecessor(n1);
+    succ = getSuccessor(n1);
     if(pred) {
         bp = new Breakpoint;
         *bp = make_pair(pred->getBreakpoint()->second,p);
         n1->setBreakpoint(bp);
-    }
 
-    succ = getSuccessor(n1);
-    if(succ) {
+        bp = new Breakpoint;
+        *bp = make_pair(p,pred->getBreakpoint()->second);
+        n2->setBreakpoint(bp);
+
+    } else if(succ){
         bp = new Breakpoint;
         *bp = make_pair(p,succ->getBreakpoint()->first);
+        n1->setBreakpoint(bp);
 
-        if(n1->getBreakpoint() != nullptr) {
-            n2 = new BLNode;
-            n2->setBreakpoint(bp);
-        } else {
-            n1->setBreakpoint(bp);
-        }
+        bp = new Breakpoint;
+        *bp = make_pair(succ->getBreakpoint()->first,p);
+        n2->setBreakpoint(bp);
+    } else {
+        cout << "didnt' hav a pred or a succ" << endl;
     }
+    root = insert(n2);
 
-    if(n1->getBreakpoint() == nullptr) {
-        remove(n1);
-    }
-    if(n2 != nullptr) {
-        insert(n2);
-    }
-
-    NodePair* nodes = new NodePair;
     *nodes = std::make_pair(n1,n2);
-
     return nodes;
 }
 
@@ -448,9 +456,26 @@ double Beachline::height(BLNode* n) {
 
 void Beachline::handleSiteEvent(SiteEvent* se) {
     sweeplineY = se->y;
+    cout << "inserting" << endl;
     NodePair* nodes = insert(se);
+    cout << "inserted" << endl;
 
-    evaluateCircleEventCandidate(nodes);
+    cout << "evaluating cevent" << endl;
+    if(!nodes->first) {
+        if(nodes->second) {
+            nodes->first = getPredecessor(nodes->second);
+        } else {
+
+        }
+    }
+    CircleEvent* ce = evaluateCircleEventCandidate(nodes);
+    cout << "evaluated" << endl;
+    if(ce) {
+        Event* e = new Event(ce);
+        eq.push(e);
+        cout << "Pushed CE onto queue" << endl;
+    }
+
     // add 2 half edges
     delete nodes;
 }

@@ -10,7 +10,7 @@
 #include <queue>
 
 
-enum EventType       { CircleE, PointE };
+enum EventType       { CircleE, SiteE };
 enum NodeColor       { Red, Black };
 
 extern double sweeplineY;
@@ -31,7 +31,10 @@ typedef struct CircleEvent {
 
 typedef Point SiteEvent;
 
-typedef struct {
+typedef struct Event {
+    Event(CircleEvent* ce);
+    Event(SiteEvent* se);
+
     EventType type;
 
     // One of these will be null

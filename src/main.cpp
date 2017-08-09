@@ -19,7 +19,7 @@ EventQueue eq;
 
 template<typename T> void print_queue(T& q) {
     while(!q.empty()) {
-        if(q.top()->type == PointE)
+        if(q.top()->type == SiteE)
             std::cout << q.top()->se->x << "," <<  q.top()->se->y << endl;
         else
             std::cout << "circleevent" << endl;
@@ -44,10 +44,7 @@ int main(int argc, char** argv) {
             if(a > boundX) boundX = a;
             if(b > boundY) boundY = b;
 
-            tmp = new Event;
-            tmp->type = PointE;
-            tmp->se = new Point(a,b);
-
+            tmp = new Event(new Point(a,b));
             eq.push(tmp);
         }
 
@@ -86,7 +83,7 @@ int main(int argc, char** argv) {
         } else {
             if(count < 10) {
                 count++;
-                if(e1->type == PointE) {
+                if(e1->type == SiteE) {
                     bl->handleSiteEvent(e1->se);
                 } else {
                     bl->handleCircleEvent(e1->ce);
