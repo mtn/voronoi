@@ -9,7 +9,7 @@ Circle::Circle(Point* center, double radius) {
     this->radius = radius;
 }
 
-Circle* Circle::computeCircumcircle(Point* a, Point* b, Point* c) {
+Circle* Circle::computeCircumcircle(const Point* a, const Point* b, const Point* c) {
     Point* ba = new Point(b->x-a->x,b->y-a->y);
     Point* ca = new Point(c->x-a->x,c->y-a->y);
 

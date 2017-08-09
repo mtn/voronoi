@@ -34,6 +34,7 @@ typedef struct {
     EventType type;
 
     // One of these will be null
+    // TODO use union
     CircleEvent* ce;
     SiteEvent* se;
 } Event;
@@ -91,9 +92,10 @@ class BLNode {
         Breakpoint* breakpoint;
         DCEL_Edge* edge; // The voronoi edge the breakpoint is tracing out
 
-        // The circle events when the left and right arcs will disappear are store
-        // Thus, prev.right should agree with this.left, etc.
-        CircleEvent* lEvent; // Could be null
+        // The potential circle events when the left and right arcs will disappear are
+        // stored. Thus, prev.right should agree with this.left, etc.
+        // One or both could be null
+        CircleEvent* lEvent;
         CircleEvent* rEvent;
 
 };
@@ -113,7 +115,6 @@ class Beachline {
         Beachline(Event* e1, Event* e2);
         ~Beachline();
 
-        // Tree operations
         void destroyTree();
         void remove(BLNode* node);
 
@@ -145,5 +146,8 @@ class Beachline {
         BLNode* findMax(BLNode* n) const;
 
         double height(BLNode* n);
+
+        // Beachline operations
+        bool isCircleEventCandidate(BLNode* b1, BLNode* b2) const;
 };
 

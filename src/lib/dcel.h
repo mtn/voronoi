@@ -9,15 +9,19 @@ struct vert {
     double x;
     double y;
 
-    struct edge* edge;
+    struct edge* edge; // list of incident half-edges
 };
 
 struct edge {
-    struct vert* vert; // vertex the edge emanates from
+    struct vert* start; // vertex the edge emanates from
+    struct vert* end;
+
     struct face* face; // possibly null
 
     struct edge* sibling;
+
     struct edge* next; // clockwise next
+    struct edge* prev;
 };
 
 struct face {

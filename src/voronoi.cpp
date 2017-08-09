@@ -96,15 +96,12 @@ double BLNode::computeIntersection(double sweeplineY) const {
     }
 
     if(getBreakpoint()->first->y == sweeplineY) {
-        /* cout << "RETURNING bc we're on the sweepline" << endl; */
         return getBreakpoint()->first->x;
     }
     if(getBreakpoint()->second->y == sweeplineY) {
-        /* cout << "RETURNING bc we're on the sweepline" << endl; */
         return getBreakpoint()->second->x;
     }
 
-    /* cout << "made it to here in compuateInterxc " << this << endl; */
 
     double ay = getBreakpoint()->first->y - sweeplineY;
     double bx = getBreakpoint()->second->x - getBreakpoint()->first->x;
@@ -194,8 +191,6 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
         t->height = 0;
         t->lNode = t->rNode = nullptr;
         t->parent = par;
-        /* cout << "Inserted node with address " << node << endl; */
-        /* if(node->getBreakpoint()) cout << "The node HAS a breakpoint" << endl; */
     } else if(node->computeIntersection(sweeplineY)
             < t->computeIntersection(sweeplineY)) {
 
@@ -274,8 +269,6 @@ void Beachline::insert(Point* p) {
     pred = getPredecessor(n1);
     if(pred) {
         bp = new Breakpoint;
-        /* cout << "pred" << pred << endl; */
-        /* cout << "breakpoint" << pred->getBreakpoint() << endl; */
         *bp = make_pair(pred->getBreakpoint()->second,p);
         n1->setBreakpoint(bp);
     }
@@ -435,9 +428,27 @@ double Beachline::height(BLNode* n) {
 void Beachline::handleSiteEvent(SiteEvent* se) {
     sweeplineY = se->y;
     insert(se);
+    // add 2 half edges
+    // check for circle events. add any that are found to pq
 }
 
 void Beachline::handleCircleEvent(CircleEvent* ce) {
-
+    sweeplineY = ce->c->center->y + ce->c->radius;
+    // add vertex to appropriate edge into dcel
+    // delete
 }
 
+// Enforces that b2 should be the successor of b1
+bool Beachline::isCircleEventCandidate(BLNode* b1, BLNode* b2) const {
+
+    if(getSuccessor(b1) != b2) {
+        return false;
+    }
+
+    const Point* x = b1->getBreakpoint()->first;
+    const Point* y = b1->getBreakpoint()->second;
+    const Point* z = b2->getBreakpoint()->first;
+    Circle* c = Circle::computeCircumcircle(x,y,z);
+
+    return c->center->y + c->radius > sweeplineY;
+}

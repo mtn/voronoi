@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
         fs.close();
     } else { // Generates the points and stores them in t.in for further testing
         boundX = boundY = 1;
-
+        exit(0);
     }
 
     /* Graphics* g = new Graphics; */
@@ -90,7 +90,11 @@ int main(int argc, char** argv) {
         } else {
             if(count < 5) {
                 count++;
-                bl->handleSiteEvent(e1->se);
+                if(e1->type == PointE) {
+                    bl->handleSiteEvent(e1->se);
+                } else {
+                    bl->handleCircleEvent(e1->ce);
+                }
             }
         }
 
