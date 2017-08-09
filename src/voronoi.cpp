@@ -89,22 +89,6 @@ DCEL_Edge* BLNode::getEdge() const {
     return edge;
 }
 
-void BLNode::setLEvent(CircleEvent* lEvent) {
-    this->lEvent = lEvent;
-}
-
-CircleEvent* BLNode::getLEvent() const {
-    return lEvent;
-}
-
-void BLNode::setREvent(CircleEvent* rEvent) {
-    this->rEvent = rEvent;
-}
-
-CircleEvent* BLNode::getREvent() const {
-    return rEvent;
-}
-
 Point* BLNode::getPoint() const {
     return p;
 }
@@ -456,9 +440,21 @@ void Beachline::handleSiteEvent(SiteEvent* se) {
     sweeplineY = se->y;
     NodePair* nodes = insert(se);
 
+    BLNode* pred = getPredecessor(nodes->first);
+    if(pred && pred->rEvent) {
+        pred->rEvent->deleted = true;
+        cout << "Deleted an old ce" << endl;
+    }
+    BLNode* succ = getSuccessor(nodes->second);
+    if(succ && succ->lEvent) {
+        succ->lEvent->deleted = true;
+        cout << "Deleted an old ce" << endl;
+    }
+
     evaluateCircleEventCandidate(nodes);
 
-    // add 2 half edges
+    // add 2 half edges to the dcel
+
     delete nodes;
 }
 
@@ -469,7 +465,7 @@ void Beachline::handleCircleEvent(CircleEvent* ce) {
         return;
     }
 
-    // add vertex to appropriate edge into dcel
+    // add vertex, set it's loc as the center of the circle
     // delete
 }
 

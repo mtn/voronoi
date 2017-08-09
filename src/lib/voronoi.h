@@ -88,8 +88,6 @@ class BLNode {
         BLNode* parent;
         int height;
 
-        NodeColor color;
-
     private:
         // TODO use unions to enforce that nothing can exist simultaneously with a point
 

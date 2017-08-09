@@ -6,8 +6,7 @@
 // eg. Creating a sibling should happen in a function rather than e.s.s=e, etc.
 
 struct vert {
-    double x;
-    double y;
+    Point* loc;
 
     struct edge* edge; // list of incident half-edges
 };
