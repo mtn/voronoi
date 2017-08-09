@@ -16,16 +16,16 @@ extern double sweeplineY;
 
 
 class BLNode;
-typedef struct {
-    bool deleted;
+typedef struct CircleEvent {
+    CircleEvent(Circle* c, BLNode* b1, BLNode* b2);
+    ~CircleEvent();
 
-    Point* p1;
-    Point* p2;
-    Point* p3;
+    bool deleted;
 
     Circle* c;
 
-    BLNode* node;
+    BLNode* b1;
+    BLNode* b2;
 } CircleEvent;
 
 typedef Point SiteEvent;
@@ -148,6 +148,6 @@ class Beachline {
         double height(BLNode* n);
 
         // Beachline operations
-        bool isCircleEventCandidate(BLNode* b1, BLNode* b2) const;
+        CircleEvent* isCircleEventCandidate(BLNode* b1, BLNode* b2) const;
 };
 

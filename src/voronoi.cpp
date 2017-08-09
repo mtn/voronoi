@@ -17,6 +17,17 @@ double getEventPriority(const Event* e) {
 }
 
 
+CircleEvent::CircleEvent(Circle* c, BLNode* b1, BLNode* b2) {
+    deleted = false;
+    this->c = c;
+    this->b1 = b1;
+    this->b2 = b2;
+}
+
+CircleEvent::~CircleEvent() {
+    delete c;
+}
+
 BLNode::BLNode() {
     p = nullptr;
     breakpoint = nullptr;
@@ -439,10 +450,10 @@ void Beachline::handleCircleEvent(CircleEvent* ce) {
 }
 
 // Enforces that b2 should be the successor of b1
-bool Beachline::isCircleEventCandidate(BLNode* b1, BLNode* b2) const {
+CircleEvent* Beachline::isCircleEventCandidate(BLNode* b1, BLNode* b2) const {
 
     if(getSuccessor(b1) != b2) {
-        return false;
+        return nullptr;
     }
 
     const Point* x = b1->getBreakpoint()->first;
@@ -450,5 +461,14 @@ bool Beachline::isCircleEventCandidate(BLNode* b1, BLNode* b2) const {
     const Point* z = b2->getBreakpoint()->first;
     Circle* c = Circle::computeCircumcircle(x,y,z);
 
-    return c->center->y + c->radius > sweeplineY;
+    if(c->center->y + c->radius < sweeplineY) {
+        return nullptr;
+    }
+
+    CircleEvent* ce = new CircleEvent(c,b1,b2);
+    b1->rEvent = ce;
+    b2->lEvent = ce;
+
+    return ce;
 }
+
