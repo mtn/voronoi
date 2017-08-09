@@ -9,7 +9,7 @@ Point::Point(double x, double y) {
     this->y = y;
 }
 
-double Point::dist(Point* a, Point* b) {
+double Point::dist(const Point* a, const Point* b) {
     return sqrt(pow(a->x-b->x,2) + pow(a->y-b->y,2));
 }
 

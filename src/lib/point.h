@@ -15,7 +15,7 @@ class Point {
         bool operator<(const Point& p) const;
         bool operator==(const Point& p) const;
 
-        static double dist(Point* a, Point* b);
+        static double dist(const Point* a, const Point* b);
         static Point* midPoint(Point* a, Point* b);
         static double slope(Point* a, Point* b);
 

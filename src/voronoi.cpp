@@ -198,6 +198,7 @@ BLNode* Beachline::doubleRotateRight(BLNode* t) {
 
 BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
     if(t == nullptr) {
+        cout << "Inserted a node" << endl;
         t = node;
         t->height = 0;
         t->lNode = t->rNode = nullptr;
@@ -450,7 +451,7 @@ void Beachline::handleCircleEvent(CircleEvent* ce) {
 }
 
 // Enforces that b2 should be the successor of b1
-CircleEvent* Beachline::isCircleEventCandidate(BLNode* b1, BLNode* b2) const {
+CircleEvent* Beachline::handleCircleEventCandidate(BLNode* b1, BLNode* b2) const {
 
     if(getSuccessor(b1) != b2) {
         return nullptr;

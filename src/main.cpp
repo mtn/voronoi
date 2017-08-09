@@ -10,12 +10,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
-
-#include <utility>
 #include <queue>
-#include <set>
-
-#include <stdio.h>
 
 using namespace std;
 
@@ -60,7 +55,7 @@ int main(int argc, char** argv) {
         boundY = ceil(boundY);
 
         fs.close();
-    } else { // Generates the points and stores them in t.in for further testing
+    } else { // Generates the points and stores them in last.in for further testing
         boundX = boundY = 1;
         exit(0);
     }
@@ -79,7 +74,8 @@ int main(int argc, char** argv) {
     while(!pq.empty()) {
         e1 = pq.top();
         pq.pop();
-            // TODO handle degenerate case where the first two sites have the same y
+
+        // TODO handle degenerate case where the first two sites have the same y
         if(first) {
             e2 = pq.top();
             pq.pop();
@@ -88,7 +84,7 @@ int main(int argc, char** argv) {
             e2 = nullptr;
             first = false;
         } else {
-            if(count < 5) {
+            if(count < 10) {
                 count++;
                 if(e1->type == PointE) {
                     bl->handleSiteEvent(e1->se);
@@ -100,37 +96,14 @@ int main(int argc, char** argv) {
 
     }
 
-/*     BLNode* min; */
-/*     sweeplineY = boundY; */
-/*     min = bl->findMin(); */
-/*     while(min) { */
-/*         cout << min->computeIntersection(sweeplineY) << endl; */
-/*         min = bl->getSuccessor(min); */
-/*     } */
-/*     cout << endl; */
-
-
-
-
-    /* Breakpoint b1 = std::make_pair(new Point(2,1),new Point(3,2)); */
-    /* Breakpoint b2 = std::make_pair(new Point(3,2),new Point(2,1)); */
-    /* cout << computeIntersection(b1,0.5) << endl; */
-    /* cout << computeIntersection(b2,0.5) << endl; */
-
-    /* CircleEvent* ce = new CircleEvent; */
-    /* ce->c = new Circle(new Point(0.5,0.5),0.5); */
-    /* Event* e = new Event; */
-    /* e->ce = ce; */
-    /* e->type = CircleE; */
-    /* pq.push(e); */
-
-
-    /* Breakpoint p(new Point(1,2),new Point(2,3)); */
-
-    /* std::cout << p.first << "," << p.second << endl; */
-
-
-
-
+    BLNode* min;
+    sweeplineY = boundY;
+    min = bl->findMin();
+    while(min) {
+        cout << min->computeIntersection(sweeplineY) << endl;
+        min = bl->getSuccessor(min);
+    }
+    cout << endl;
+    cout << count << endl;
 }
 

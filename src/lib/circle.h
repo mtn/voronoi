@@ -4,7 +4,7 @@
 
 class Circle {
     public:
-        Point* center;
+        const Point* center;
         double radius;
 
         Circle(Point* center, double radius);
