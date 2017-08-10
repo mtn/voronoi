@@ -358,34 +358,40 @@ BLNode* Beachline::getPredecessor(BLNode* n) const {
 }
 
 void Beachline::remove(BLNode* n) {
+    cout << "starting removal" << endl;
     root = remove(n,root);
 }
 
 // Fails if the node requested for removal is not in tree
 BLNode* Beachline::remove(BLNode* n, BLNode* t) {
+    double nIntersect, tIntersect;
     BLNode* temp;
 
     if(t == nullptr) {
         return nullptr;
+    } else {
+        nIntersect = n->computeIntersection(sweeplineY);
+        tIntersect = t->computeIntersection(sweeplineY);
     }
 
     // Searching
-    else if(n->computeIntersection(sweeplineY)
-            < t->computeIntersection(sweeplineY)) {
+    if(nIntersect < tIntersect) {
         t->lNode = remove(n,t->lNode);
-    } else if(n->computeIntersection(sweeplineY)
-            >= t->computeIntersection(sweeplineY)) {
+    } else if(nIntersect > tIntersect) {
         t->rNode = remove(n,t->rNode);
     }
 
     // Element found with 2 children
-    // Finds least node in right subtree and swaps it in
+    // Swaps the successor into its place
+    // Shouldn't ever be used, but included for completeness
     else if(t->lNode && t->rNode) {
         temp = t;
-        t = findMin(t->rNode);
+        t = getSuccessor(t);
+
         t->parent = temp->parent;
         t->lNode = temp->lNode;
         t->rNode = temp->rNode;
+
         delete temp;
     }
 
@@ -393,24 +399,38 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
     // If there's a child, it's shifted up. Otherwise, we're at a leaf and removal
     // is trivial.
     else {
-        temp = t;
-        if(t->lNode == nullptr) {
+        cout << "GOOD element found with less than 2 children" << endl;
+        if(t->lNode == nullptr && t->rNode == nullptr) {
+            cout << "made it here" << endl;
+            cout << "t: " << t << endl;
+            delete t;
+            /* removalParentUpdate(t,nullptr); */
+        } else if(t->rNode != nullptr) {
             t->rNode->parent = t->parent;
+
+            removalParentUpdate(t,t->rNode);
+
             t = t->rNode;
-        } else if(t->rNode == nullptr) {
+            delete t;
+        } else {
             t->lNode->parent = t->parent;
+
+            removalParentUpdate(t,t->lNode);
+
             t = t->lNode;
+            delete t;
         }
-        delete temp;
-    }
-    if(t == nullptr) {
-        return t;
+
     }
 
-    t->height = std::max(height(t->lNode),height(t->rNode));
+    // Search leads to null
+    if(t == nullptr) {
+        return nullptr;
+    }
+
+    updateHeight(t);
 
     // Balancing Checks
-
     if(height(t->lNode) - height(t->rNode) == 2) {
 
         if(height(t->lNode->lNode) - height(t->lNode->rNode) == 1) {
@@ -432,8 +452,26 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
     return t;
 }
 
+void Beachline::removalParentUpdate(BLNode* t, BLNode* updateVal) {
+    if(t->parent) {
+        if(t->parent->lNode == t) {
+            t->parent->lNode = updateVal;
+        } else {
+            t->parent->rNode = updateVal;
+        }
+
+        updateHeight(t->parent);
+    }
+}
+
 double Beachline::height(BLNode* n) {
-    return n == NULL ? -1 : n->height;
+    return n == nullptr ? -1 : n->height;
+}
+
+void Beachline::updateHeight(BLNode* n) {
+    if(n) {
+        n->height = std::max(height(n->lNode),height(n->rNode)) + 1;
+    }
 }
 
 void Beachline::handleSiteEvent(SiteEvent* se) {

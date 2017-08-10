@@ -136,6 +136,7 @@ class Beachline {
 
         void destroyTree(BLNode* x);
         BLNode* remove(BLNode* node, BLNode* temp);
+        void removalParentUpdate(BLNode* n, BLNode* updateVal);
 
         NodePair* insert(Point* p);
         BLNode* insert(BLNode* node);
@@ -151,6 +152,7 @@ class Beachline {
         BLNode* findMax(BLNode* n) const;
 
         double height(BLNode* n);
+        void updateHeight(BLNode* n);
 
         // Beachline operations
         void evaluateCircleEventCandidate(NodePair* n) const;

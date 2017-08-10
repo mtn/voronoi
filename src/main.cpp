@@ -93,14 +93,39 @@ int main(int argc, char** argv) {
 
     }
 
-    BLNode* min;
-    sweeplineY = boundY;
+    BLNode* min = bl->findMin();
+    cout << "removing " << min << endl;
+    cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl;
+    cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl;
+    bl->remove(min);
+    cout << "removed" << endl;
     min = bl->findMin();
-    while(min) {
-        cout << min->computeIntersection(sweeplineY) << endl;
-        min = bl->getSuccessor(min);
-    }
-    cout << endl;
-    cout << count << endl;
+    cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl;
+    cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl;
+    cout << "removing " << min << endl;
+    bl->remove(min);
+    cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl;
+    cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl;
+    cout << "removing " << min << endl;
+    bl->remove(min);
+    cout << "removing " << min << endl;
+    bl->remove(min);
+    cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl;
+    cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl;
+    cout << "removing " << min << endl;
+    bl->remove(min);
+    cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl;
+    cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl;
+    cout << "removing " << min << endl;
+    bl->remove(min);
+    cout << "removed" << endl;
+
+    /* sweeplineY = boundY; */
+    /* while(min) { */
+    /*     cout << min->computeIntersection(sweeplineY) << endl; */
+    /*     min = bl->getSuccessor(min); */
+    /* } */
+    /* cout << endl; */
+    /* cout << count << endl; */
 }
 
