@@ -37,6 +37,12 @@ int main(int argc, char** argv) {
     double boundX = 0, boundY = 0;
     if(argc > 1) {
         ifstream fs(argv[1]);
+
+        if(!fs) {
+            cerr << "File was not opened successfully! Exiting." << endl;
+            return 1;
+        }
+
         double a, b;
         Event* tmp;
 
@@ -54,7 +60,7 @@ int main(int argc, char** argv) {
         fs.close();
     } else { // Generates the points and stores them in last.in for further testing
         boundX = boundY = 1;
-        exit(0);
+        return 0;
     }
 
     /* Graphics* g = new Graphics; */
@@ -94,31 +100,35 @@ int main(int argc, char** argv) {
     }
 
     BLNode* min = bl->findMin();
-    cout << "removing " << min << endl;
+    cout << "min " << min << endl;
+    /* cout << "removing " << min << endl; */
     cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl;
     cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl;
     bl->remove(min);
     cout << "removed" << endl;
     min = bl->findMin();
-    cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl;
-    cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl;
-    cout << "removing " << min << endl;
-    bl->remove(min);
-    cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl;
-    cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl;
-    cout << "removing " << min << endl;
-    bl->remove(min);
-    cout << "removing " << min << endl;
-    bl->remove(min);
-    cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl;
-    cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl;
-    cout << "removing " << min << endl;
-    bl->remove(min);
-    cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl;
-    cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl;
-    cout << "removing " << min << endl;
-    bl->remove(min);
-    cout << "removed" << endl;
+    cout << min->getBreakpoint() << endl;;
+    cout << "min: " << min<<endl;
+    /* cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl; */
+    /* cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl; */
+    /* /1* cout << "removing " << min << endl; *1/ */
+    /* bl->remove(min); */
+    /* cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl; */
+    /* cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl; */
+    /* /1* cout << "removing " << min << endl; *1/ */
+    /* bl->remove(min); */
+    /* /1* cout << "removing " << min << endl; *1/ */
+    /* bl->remove(min); */
+    /* cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl; */
+    /* cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl; */
+    /* /1* cout << "removing " << min << endl; *1/ */
+    /* bl->remove(min); */
+    /* cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl; */
+    /* cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl; */
+    /* /1* cout << "removing " << min << endl; *1/ */
+    /* bl->remove(min); */
+    /* cout << "removed" << endl; */
+
 
     /* sweeplineY = boundY; */
     /* while(min) { */

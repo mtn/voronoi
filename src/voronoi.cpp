@@ -48,6 +48,13 @@ BLNode::BLNode() {
     lNode = rNode = parent = nullptr;
 }
 
+BLNode::~BLNode() {
+    cout << "Node " << this << " is being deleted." << endl;
+    if(breakpoint) {
+        delete breakpoint;
+    }
+}
+
 BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) {
     p = nullptr;
     breakpoint = b;
@@ -135,7 +142,9 @@ Beachline::Beachline(Event* e1, Event* e2) {
 
 Beachline::~Beachline() {
     // TODO rewrite without recursion using a stack
+    cout << "Being used" << endl;
     destroyTree(root);
+    root = nullptr;
 }
 
 bool Beachline::isEmpty() const {
@@ -147,6 +156,7 @@ void Beachline::destroyTree(BLNode* node) {
         destroyTree(node->lNode);
         destroyTree(node->rNode);
         delete node;
+        node = nullptr;
     }
 }
 
@@ -162,8 +172,8 @@ BLNode* Beachline::rotateLeft(BLNode* t) {
     u->parent = t->parent;
     t->parent = u;
 
-    t->height = std::max(height(t->lNode),height(t->rNode)) + 1;
-    u->height = std::max(height(t->rNode),height(t)) + 1;
+    updateHeight(t);
+    updateHeight(u);
 
     return u;
 }
@@ -185,8 +195,8 @@ BLNode* Beachline::rotateRight(BLNode* t) {
     u->parent = t->parent;
     t->parent = u;
 
-    t->height = std::max(height(t->lNode),height(t->rNode)) + 1;
-    u->height = std::max(height(u->lNode),height(t)) + 1;
+    updateHeight(t);
+    updateHeight(u);
 
     return u;
 }
@@ -198,8 +208,9 @@ BLNode* Beachline::doubleRotateRight(BLNode* t) {
 
 BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
     if(t == nullptr) {
-        cout << "Inserted a node" << endl;
+        /* cout << "Inserted a node" << endl; */
         t = node;
+        /* cout << "Node: " << node << endl; */
         t->height = 0;
         t->lNode = t->rNode = nullptr;
         t->parent = par;
@@ -236,7 +247,7 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
 
     }
 
-    t->height = std::max(height(t->lNode),height(t->rNode)) + 1;
+    updateHeight(t);
 
     return t;
 }
@@ -306,7 +317,11 @@ NodePair* Beachline::insert(Point* p) {
 }
 
 BLNode* Beachline::findMin() const {
-    return findMin(root);
+    cout << "getting min" << endl;
+    BLNode* min = findMin(root);
+    cout << "got min" << endl;
+    return min;
+    /* return findMin(root); */
 }
 
 BLNode* Beachline::findMin(BLNode* n) const {
@@ -367,6 +382,7 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
     double nIntersect, tIntersect;
     BLNode* temp;
 
+    // Search returned null
     if(t == nullptr) {
         return nullptr;
     } else {
@@ -385,6 +401,7 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
     // Swaps the successor into its place
     // Shouldn't ever be used, but included for completeness
     else if(t->lNode && t->rNode) {
+        cout << "being used" << endl;
         temp = t;
         t = getSuccessor(t);
 
@@ -392,6 +409,7 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
         t->lNode = temp->lNode;
         t->rNode = temp->rNode;
 
+        cout << "shouldn't be here" << endl;
         delete temp;
     }
 
@@ -401,24 +419,19 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
     else {
         cout << "GOOD element found with less than 2 children" << endl;
         if(t->lNode == nullptr && t->rNode == nullptr) {
-            cout << "made it here" << endl;
-            cout << "t: " << t << endl;
-            delete t;
-            /* removalParentUpdate(t,nullptr); */
+            cout << "on branch 1" << endl;
+            removeAndUpdateParent(t,nullptr);
+            cout << "past branch 1" << endl;
         } else if(t->rNode != nullptr) {
+            cout << "on branch 2" << endl;
             t->rNode->parent = t->parent;
-
-            removalParentUpdate(t,t->rNode);
-
-            t = t->rNode;
-            delete t;
+            removeAndUpdateParent(t,t->rNode);
+            cout << "past branch 2" << endl;
         } else {
+            cout << "on branch 3" << endl;
             t->lNode->parent = t->parent;
-
-            removalParentUpdate(t,t->lNode);
-
-            t = t->lNode;
-            delete t;
+            removeAndUpdateParent(t,t->lNode);
+            cout << "past branch 3" << endl;
         }
 
     }
@@ -452,7 +465,7 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
     return t;
 }
 
-void Beachline::removalParentUpdate(BLNode* t, BLNode* updateVal) {
+void Beachline::removeAndUpdateParent(BLNode* t, BLNode* updateVal) {
     if(t->parent) {
         if(t->parent->lNode == t) {
             t->parent->lNode = updateVal;
@@ -462,6 +475,9 @@ void Beachline::removalParentUpdate(BLNode* t, BLNode* updateVal) {
 
         updateHeight(t->parent);
     }
+    cout << "t: " << t << endl;
+    delete t;
+    t = nullptr;
 }
 
 double Beachline::height(BLNode* n) {
@@ -481,19 +497,19 @@ void Beachline::handleSiteEvent(SiteEvent* se) {
     BLNode* pred = getPredecessor(nodes->first);
     if(pred && pred->rEvent) {
         pred->rEvent->deleted = true;
-        cout << "Deleted an old ce" << endl;
+        /* cout << "Deleted an old ce" << endl; */
     }
     BLNode* succ = getSuccessor(nodes->second);
     if(succ && succ->lEvent) {
         succ->lEvent->deleted = true;
-        cout << "Deleted an old ce" << endl;
+        /* cout << "Deleted an old ce" << endl; */
     }
 
     evaluateCircleEventCandidate(nodes);
 
     // add 2 half edges to the dcel
 
-    delete nodes;
+    /* delete nodes; */
 }
 
 void Beachline::handleCircleEvent(CircleEvent* ce) {
@@ -541,7 +557,7 @@ void Beachline::pushEvent(Circle* c, BLNode* l, BLNode* r) const {
         l->lEvent = ce;
         r->rEvent = ce;
         eq.push(new Event(ce));
-        cout << "Pushed CE onto queue" << endl;
+        /* cout << "Pushed CE onto queue" << endl; */
     }
 }
 

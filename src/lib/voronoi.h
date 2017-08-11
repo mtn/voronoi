@@ -63,6 +63,7 @@ class BLNode {
 
     public:
         BLNode();
+        ~BLNode();
         BLNode(Point* p); // Intended only for the initial insertion
         BLNode(Breakpoint* b);
         BLNode(Breakpoint* b, DCEL_Edge* e);
@@ -136,7 +137,7 @@ class Beachline {
 
         void destroyTree(BLNode* x);
         BLNode* remove(BLNode* node, BLNode* temp);
-        void removalParentUpdate(BLNode* n, BLNode* updateVal);
+        void removeAndUpdateParent(BLNode* n, BLNode* updateVal);
 
         NodePair* insert(Point* p);
         BLNode* insert(BLNode* node);
