@@ -52,27 +52,24 @@ BLNode::~BLNode() {
     cout << "Node " << this << " is being deleted." << endl;
     if(breakpoint) {
         delete breakpoint;
+        breakpoint = nullptr;
     }
 }
 
-BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) {
+BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) : breakpoint(b), edge(e) {
     p = nullptr;
-    breakpoint = b;
-    edge = e;
     lEvent = rEvent = nullptr;
     lNode = rNode = parent = nullptr;
 }
 
-BLNode::BLNode(Breakpoint* b) {
+BLNode::BLNode(Breakpoint* b) : breakpoint(b) {
     p = nullptr;
-    breakpoint = b;
     edge = new DCEL_Edge;
     lNode = rNode = parent = nullptr;
 }
 
 // Used only in the first case (add a single leaf)
-BLNode::BLNode(Point* p) {
-    this->p = p;
+BLNode::BLNode(Point* p) : p(p) {
     breakpoint = nullptr;
     edge = nullptr;
     lEvent = nullptr;
@@ -392,9 +389,9 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
 
     // Searching
     if(nIntersect < tIntersect) {
-        t->lNode = remove(n,t->lNode);
+        remove(n,t->lNode);
     } else if(nIntersect > tIntersect) {
-        t->rNode = remove(n,t->rNode);
+        remove(n,t->rNode);
     }
 
     // Element found with 2 children
@@ -475,6 +472,7 @@ void Beachline::removeAndUpdateParent(BLNode* t, BLNode* updateVal) {
 
         updateHeight(t->parent);
     }
+
     cout << "t: " << t << endl;
     delete t;
     t = nullptr;
