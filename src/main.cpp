@@ -16,7 +16,6 @@ using namespace std;
 double sweeplineY; // This might only be safe to update on sevents and after cevents
 EventQueue eq;
 
-
 template<typename T> void print_queue(T& q) {
     while(!q.empty()) {
         if(q.top()->type == SiteE)
@@ -100,17 +99,19 @@ int main(int argc, char** argv) {
     }
 
     BLNode* min = bl->findMin();
-    cout << "min " << min << endl;
-    /* cout << "removing " << min << endl; */
-    cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl;
-    cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl;
+    cout << "first " << min << endl;
+    /* /1* cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl; *1/ */
+    /* /1* cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl; *1/ */
+    cout << "first removal " << endl;
     bl->remove(min);
-    cout << "removed" << endl;
+    cout << "first removal finished" << endl;
+    /* /1* cout << "removed" << endl; *1/ */
     min = bl->findMin();
-    cout << min->getBreakpoint() << endl;;
-    cout << "min: " << min<<endl;
-    /* cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl; */
-    /* cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl; */
+    /* cout << "second " <<  min << endl; */
+    /* bl->remove(min); */
+    /* /1* cout << "New min " << min << endl; *1/ */
+    /* /1* cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl; *1/ */
+    /* /1* cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl; *1/ */
     /* /1* cout << "removing " << min << endl; *1/ */
     /* bl->remove(min); */
     /* cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl; */
