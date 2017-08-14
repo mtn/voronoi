@@ -99,8 +99,6 @@ Point* BLNode::getPoint() const {
 
 double BLNode::computeIntersection(double sweeplineY) const {
 
-    // As a hack to get site event insertion of points to work, and to allow insertion of
-    // two breakpoints that appear to be at the same location, points are shited slightly
     Point* p;
     if((p = getPoint())) {
         return p->x;
@@ -112,7 +110,6 @@ double BLNode::computeIntersection(double sweeplineY) const {
     if(getBreakpoint()->second->y == sweeplineY) {
         return getBreakpoint()->second->x;
     }
-
 
     double ay = getBreakpoint()->first->y - sweeplineY;
     double bx = getBreakpoint()->second->x - getBreakpoint()->first->x;
@@ -139,7 +136,6 @@ Beachline::Beachline(Event* e1, Event* e2) {
 
 Beachline::~Beachline() {
     // TODO rewrite without recursion using a stack
-    cout << "Being used" << endl;
     destroyTree(root);
     root = nullptr;
 }
@@ -158,11 +154,7 @@ void Beachline::destroyTree(BLNode* node) {
 }
 
 BLNode* Beachline::rotateLeft(BLNode* t) {
-    cout << "made it here" << endl;
-    cout << " t " << t << endl;
-    /* cout << t->rNode << endl; */
     BLNode* u = t->rNode;
-    /* cout << "u->l" << u->lNode << endl; */
     t->rNode = u->lNode;
 
     if(t->rNode) {
@@ -211,16 +203,16 @@ BLNode* Beachline::doubleRotateRight(BLNode* t) {
 
 void checkInvariants(BLNode* t) {
     if(t->lNode) {
-        assert(t->lNode->computeIntersection(sweeplineY) < t->computeIntersection(sweeplineY));
+        assert(t->lNode->computeIntersection(sweeplineY) <= t->computeIntersection(sweeplineY));
         if(t->rNode) {
-            cout << "lnode" << t->lNode->computeIntersection(sweeplineY) << "rnode" << t->rNode->computeIntersection(sweeplineY) << endl;
-            assert(t->lNode->computeIntersection(sweeplineY) < t->rNode->computeIntersection(sweeplineY));
+            assert(t->lNode->computeIntersection(sweeplineY) <= t->rNode->computeIntersection(sweeplineY));
         }
     }
     if(t->rNode) {
+        /* cout << t->rNode->computeIntersection(sweeplineY) << " " << t->computeIntersection(sweeplineY) << endl; */
         assert(t->rNode->computeIntersection(sweeplineY) >= t->computeIntersection(sweeplineY));
         if(t->lNode) {
-            assert(t->lNode->computeIntersection(sweeplineY) < t->rNode->computeIntersection(sweeplineY));
+            assert(t->lNode->computeIntersection(sweeplineY) <= t->rNode->computeIntersection(sweeplineY));
         }
     }
     if(t->lNode) {
@@ -232,43 +224,50 @@ void checkInvariants(BLNode* t) {
 }
 
 BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
+    double nIntersect, tIntersect, tLIntersect, tRIntersect;
     if(t == nullptr) {
         cout << "Inserted a node" << endl;
         t = node;
+        Breakpoint* bp = node->getBreakpoint();
+
+        if(bp) {
+            cout << bp->first->x << "," << bp->first->y << " " << bp->second->x << "," << bp->second->y << endl;
+        }
+
         t->height = 0;
         t->lNode = t->rNode = nullptr;
         t->parent = par;
-    } else if(node->computeIntersection(sweeplineY)
-            < t->computeIntersection(sweeplineY)) {
+    }
+    else {
+        nIntersect = node->computeIntersection(sweeplineY);
+        tIntersect = t->computeIntersection(sweeplineY);
 
-        t->lNode = insert(node,t->lNode,t);
+        if(nIntersect < tIntersect) {
+            t->lNode = insert(node,t->lNode,t);
+    checkInvariants(t);
+            tLIntersect = t->lNode->computeIntersection(sweeplineY);
 
-        if(height(t->lNode) - height(t->rNode) == 2) {
+            if(height(t->lNode) - height(t->rNode) == 2) {
+                if(nIntersect < tLIntersect){
+                    t = rotateRight(t);
+                } else {
+                    t = doubleRotateRight(t);
+                }
+            }
+        } else {
+            t->rNode = insert(node,t->rNode,t);
+    checkInvariants(t);
+            tRIntersect = t->computeIntersection(sweeplineY);
 
-            if(node->computeIntersection(sweeplineY)
-             < t->lNode->computeIntersection(sweeplineY)) {
-                t = rotateRight(t);
-            } else {
-                t = doubleRotateRight(t);
+            if(height(t->rNode) - height(t->lNode) == 2) {
+                if(nIntersect >= tRIntersect) {
+                    t = rotateLeft(t);
+                } else {
+                    t = doubleRotateLeft(t);
+                }
             }
 
         }
-
-    } else {
-
-        t->rNode = insert(node,t->rNode,t);
-
-        if(height(t->rNode) - height(t->lNode) == 2) {
-
-            if(node->computeIntersection(sweeplineY)
-             >= t->rNode->computeIntersection(sweeplineY)) {
-                t = rotateLeft(t);
-            } else {
-                t = doubleRotateLeft(t);
-            }
-
-        }
-
     }
 
     updateHeight(t);
@@ -316,11 +315,15 @@ NodePair* Beachline::insert(Point* p) {
 
     pred = getPredecessor(n1);
     succ = getSuccessor(n1);
+    cout << "n1 " << n1->computeIntersection(sweeplineY) << endl;
+    if(pred) cout << " pred " << pred->computeIntersection(sweeplineY) << endl;
+    if(succ) cout << " succ" << succ->computeIntersection(sweeplineY) << endl;
+
     if(pred) {
         bp = new Breakpoint;
-        cout << "new breakpoint pred" << endl;
         *bp = make_pair(pred->getBreakpoint()->second,p);
         n1->setBreakpoint(bp);
+        cout << bp->first->x << "," << bp->first->y << "  " << bp->second->x << "," << bp->second->y << endl;
 
         bp = new Breakpoint;
         *bp = make_pair(p,pred->getBreakpoint()->second);
@@ -328,7 +331,6 @@ NodePair* Beachline::insert(Point* p) {
 
     } else if(succ){
         bp = new Breakpoint;
-        cout << "new breakpoint succ" << endl;
         *bp = make_pair(p,succ->getBreakpoint()->first);
         n1->setBreakpoint(bp);
 
@@ -343,9 +345,7 @@ NodePair* Beachline::insert(Point* p) {
 }
 
 BLNode* Beachline::findMin() const {
-    BLNode* min = findMin(root);
-    return min;
-    /* return findMin(root); */
+    return findMin(root);
 }
 
 BLNode* Beachline::findMin(BLNode* n) const {

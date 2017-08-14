@@ -82,7 +82,6 @@ int main(int argc, char** argv) {
             e2 = eq.top();
             eq.pop();
             bl = new Beachline(e1,e2);
-            cout << "made beachline" << endl;
 
             e2 = nullptr;
             first = false;
@@ -99,23 +98,23 @@ int main(int argc, char** argv) {
 
     }
 
-    BLNode* min = bl->findMin();
-    cout << "first " << min << endl;
-    /* /1* cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl; *1/ */
-    /* /1* cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl; *1/ */
-    cout << "first removal " << endl;
-    bl->remove(min);
-    cout << "first removal finished" << endl;
-    /* /1* cout << "removed" << endl; *1/ */
-    min = bl->findMin();
-    /* cout << "second " <<  min << endl; */
+    /* BLNode* min = bl->findMin(); */
+    /* cout << "first " << min << endl; */
+    /* /1* /2* cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl; *2/ *1/ */
+    /* /1* /2* cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl; *2/ *1/ */
+    /* cout << "first removal " << endl; */
     /* bl->remove(min); */
-    /* /1* cout << "New min " << min << endl; *1/ */
+    /* cout << "first removal finished" << endl; */
+    /* /1* /2* cout << "removed" << endl; *2/ *1/ */
+    /* min = bl->findMin(); */
+    /* /1* cout << "second " <<  min << endl; *1/ */
+    /* /1* bl->remove(min); *1/ */
+    /* /1* /2* cout << "New min " << min << endl; *2/ *1/ */
+    /* /1* /2* cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl; *2/ *1/ */
+    /* /1* /2* cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl; *2/ *1/ */
+    /* /1* /2* cout << "removing " << min << endl; *2/ *1/ */
+    /* /1* bl->remove(min); *1/ */
     /* /1* cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl; *1/ */
-    /* /1* cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl; *1/ */
-    /* /1* cout << "removing " << min << endl; *1/ */
-    /* bl->remove(min); */
-    /* cout << min->getBreakpoint()->first->x << "," << min->getBreakpoint()->first->y << endl; */
     /* cout << min->getBreakpoint()->second->x << "," << min->getBreakpoint()->second->y << endl; */
     /* /1* cout << "removing " << min << endl; *1/ */
     /* bl->remove(min); */
