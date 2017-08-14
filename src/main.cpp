@@ -78,23 +78,26 @@ int main(int argc, char** argv) {
         eq.pop();
 
         // TODO handle degenerate case where the first two sites have the same y
-        if(first) {
             e2 = eq.top();
             eq.pop();
+        if(first) {
             bl = new Beachline(e1,e2);
 
             e2 = nullptr;
             first = false;
         } else {
-            if(count < 10) {
-                count++;
-                if(e1->type == SiteE) {
-                    bl->handleSiteEvent(e1->se);
-                } else {
-                    bl->handleCircleEvent(e1->ce);
-                }
-            }
+            bl->insert(e1,e2);
+            bl->insert(e2,e1);
         }
+        /*     if(count < 10) { */
+        /*         count++; */
+        /*         if(e1->type == SiteE) { */
+        /*             bl->handleSiteEvent(e1->se); */
+        /*         } else { */
+        /*             bl->handleCircleEvent(e1->ce); */
+        /*         } */
+        /*     } */
+        /* } */
 
     }
 

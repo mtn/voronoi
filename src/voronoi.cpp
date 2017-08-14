@@ -225,26 +225,23 @@ void checkInvariants(BLNode* t) {
 
 BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
     double nIntersect, tIntersect, tLIntersect, tRIntersect;
+
     if(t == nullptr) {
         cout << "Inserted a node" << endl;
         t = node;
-        Breakpoint* bp = node->getBreakpoint();
-
-        if(bp) {
-            cout << bp->first->x << "," << bp->first->y << " " << bp->second->x << "," << bp->second->y << endl;
-        }
-
         t->height = 0;
         t->lNode = t->rNode = nullptr;
         t->parent = par;
-    }
-    else {
+    } else {
         nIntersect = node->computeIntersection(sweeplineY);
         tIntersect = t->computeIntersection(sweeplineY);
 
         if(nIntersect < tIntersect) {
             t->lNode = insert(node,t->lNode,t);
-    checkInvariants(t);
+
+            cout << "checking invariants 2" << endl;
+            checkInvariants(t);
+
             tLIntersect = t->lNode->computeIntersection(sweeplineY);
 
             if(height(t->lNode) - height(t->rNode) == 2) {
@@ -255,9 +252,14 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
                 }
             }
         } else {
+            cout << "checking invariants a1" << endl;
+            checkInvariants(t);
             t->rNode = insert(node,t->rNode,t);
-    checkInvariants(t);
-            tRIntersect = t->computeIntersection(sweeplineY);
+
+            cout << "checking invariants a" << endl;
+            checkInvariants(t);
+
+            tRIntersect = t->rNode->computeIntersection(sweeplineY);
 
             if(height(t->rNode) - height(t->lNode) == 2) {
                 if(nIntersect >= tRIntersect) {
@@ -271,12 +273,14 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
     }
 
     updateHeight(t);
+    cout << "checking invariants 3" << endl;
     checkInvariants(t);
     return t;
 }
 
 void Beachline::insert(BLNode* node) {
     root = insert(node,root,nullptr);
+    checkInvariants(root);
 }
 
 BLNode* Beachline::insert(Event* e1, Event* e2) {
@@ -310,6 +314,7 @@ NodePair* Beachline::insert(Point* p) {
 
     NodePair* nodes = new NodePair;
     n1 = new BLNode(p);
+    cout << "getpoint" << n1->getPoint()<< endl;
     n2 = new BLNode;
     insert(n1);
 

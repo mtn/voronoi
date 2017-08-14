@@ -132,6 +132,8 @@ class Beachline {
         void handleCircleEvent(CircleEvent* ce);
         void handleSiteEvent(SiteEvent* pe);
 
+        BLNode* insert(Event* e1, Event* e2);
+
     private:
         BLNode* root;
 
@@ -141,7 +143,6 @@ class Beachline {
 
         NodePair* insert(Point* p);
         void insert(BLNode* node);
-        BLNode* insert(Event* e1, Event* e2);
         BLNode* insert(BLNode* node, BLNode* t, BLNode* par);
 
         BLNode* rotateLeft(BLNode* node);
