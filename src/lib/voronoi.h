@@ -140,7 +140,7 @@ class Beachline {
         void removeAndUpdateParent(BLNode* n, BLNode* updateVal);
 
         NodePair* insert(Point* p);
-        BLNode* insert(BLNode* node);
+        void insert(BLNode* node);
         BLNode* insert(Event* e1, Event* e2);
         BLNode* insert(BLNode* node, BLNode* t, BLNode* par);
 

@@ -82,6 +82,7 @@ int main(int argc, char** argv) {
             e2 = eq.top();
             eq.pop();
             bl = new Beachline(e1,e2);
+            cout << "made beachline" << endl;
 
             e2 = nullptr;
             first = false;
