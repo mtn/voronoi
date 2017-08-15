@@ -9,6 +9,9 @@ obj = $(src:.cpp=.o)
 thiessen: $(obj) $(lib)
 	$(CC) -o $@ $(obj) $(CXXFLAGS) $(FRAMEWORK)
 
+run:
+	make && ./thiessen in/small.in
+
 .PHONY: clean
 clean:
 	rm -f $(obj) thiessen

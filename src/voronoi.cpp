@@ -314,7 +314,6 @@ NodePair* Beachline::insert(Point* p) {
 
     NodePair* nodes = new NodePair;
     n1 = new BLNode(p);
-    cout << "getpoint" << n1->getPoint()<< endl;
     n2 = new BLNode;
     insert(n1);
 
@@ -328,20 +327,23 @@ NodePair* Beachline::insert(Point* p) {
         bp = new Breakpoint;
         *bp = make_pair(pred->getBreakpoint()->second,p);
         n1->setBreakpoint(bp);
-        cout << bp->first->x << "," << bp->first->y << "  " << bp->second->x << "," << bp->second->y << endl;
+        cout << bp->first->x << "," << bp->first->y << "  " << bp->second->x << "," << bp->second->y <<" " << n1->computeIntersection(sweeplineY) << endl;
 
         bp = new Breakpoint;
         *bp = make_pair(p,pred->getBreakpoint()->second);
         n2->setBreakpoint(bp);
+        cout << bp->first->x << "," << bp->first->y << "  " << bp->second->x << "," << bp->second->y << " " << n2->computeIntersection(sweeplineY) << endl;
 
     } else if(succ){
         bp = new Breakpoint;
         *bp = make_pair(p,succ->getBreakpoint()->first);
         n1->setBreakpoint(bp);
+        cout << bp->first->x << "," << bp->first->y << "  " << bp->second->x << "," << bp->second->y <<" " << n1->computeIntersection(sweeplineY) << endl;
 
         bp = new Breakpoint;
         *bp = make_pair(succ->getBreakpoint()->first,p);
         n2->setBreakpoint(bp);
+        cout << bp->first->x << "," << bp->first->y << "  " << bp->second->x << "," << bp->second->y << " " << n2->computeIntersection(sweeplineY) << endl;
     }
     insert(n2);
 

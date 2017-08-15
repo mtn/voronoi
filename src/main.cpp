@@ -13,7 +13,7 @@
 
 using namespace std;
 
-double sweeplineY; // This might only be safe to update on sevents and after cevents
+double sweeplineY;
 EventQueue eq;
 
 template<typename T> void print_queue(T& q) {
@@ -69,7 +69,6 @@ int main(int argc, char** argv) {
 
     /* g->close(); */
 
-    int count = 0;
     bool first = true;
     Event *e1, *e2;
     Beachline* bl;
@@ -86,6 +85,7 @@ int main(int argc, char** argv) {
             e2 = nullptr;
             first = false;
         } else {
+            /* bl->handleSiteEvent(e1->se); */
             bl->insert(e1,e2);
             bl->insert(e2,e1);
         }
