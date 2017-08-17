@@ -38,3 +38,7 @@ bool Point::onBound(const Point* min, const Point* max) {
         || this->y == min->y || this->y == max->y;
 }
 
+std::string Point::toString() const {
+    std::string str = "(" + std::to_string(this->x) + "," + std::to_string(this->y) + ")";
+    return str;
+}

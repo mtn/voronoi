@@ -129,7 +129,7 @@ double BLNode::computeIntersection(double sweeplineY) const {
 
 
 Beachline::Beachline(Event* e1, Event* e2) {
-    root = nullptr; // Required to prevent root from getting some address on the stack
+    root = nullptr;
     root = insert(e1,e2);
     insert(e2,e1);
 }

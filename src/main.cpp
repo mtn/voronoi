@@ -69,37 +69,77 @@ int main(int argc, char** argv) {
 
     /* g->close(); */
 
-    bool first = true;
+    /* bool first = true; */
     Event *e1, *e2;
     Beachline* bl;
-    while(!eq.empty()) {
+    /* while(!eq.empty()) { */
         e1 = eq.top();
         eq.pop();
 
-        // TODO handle degenerate case where the first two sites have the same y
+    /*     // TODO handle degenerate case where the first two sites have the same y */
+    /*     if(first) { */
             e2 = eq.top();
             eq.pop();
-        if(first) {
+
             bl = new Beachline(e1,e2);
 
-            e2 = nullptr;
-            first = false;
-        } else {
-            /* bl->handleSiteEvent(e1->se); */
-            bl->insert(e1,e2);
-            bl->insert(e2,e1);
-        }
-        /*     if(count < 10) { */
-        /*         count++; */
-        /*         if(e1->type == SiteE) { */
-        /*             bl->handleSiteEvent(e1->se); */
-        /*         } else { */
-        /*             bl->handleCircleEvent(e1->ce); */
-        /*         } */
-        /*     } */
-        /* } */
+            BLNode* min = bl->findMin();
 
-    }
+            cout << "e1 " << e1->se->toString() << endl;
+            cout << "e2 " << e2->se->toString() << endl;
+
+            sweeplineY = 5;
+            if(min->getBreakpoint()->first == e1->se) {
+                cout << "e1 was first" << endl;
+            }else{cout << "e2 was first" << endl;}
+            cout << "intersection " << min->computeIntersection(sweeplineY) << endl;
+            BLNode* succ = bl->getSuccessor(min);
+            cout << "succ " << succ->computeIntersection(sweeplineY) << endl;
+            BLNode* oldmin = min;
+
+            BLNode* oldsucc = succ;
+            Point* p = new Point(3,5);
+            bl->handleSiteEvent(p);
+            min = bl->findMin();
+            if(min == oldmin) {
+                cout << "min stayed the saem" << endl;
+            } else {
+                cout << "min changed" << endl;
+            }
+            succ = bl->getSuccessor(min);
+            if(succ == oldsucc) {
+                cout << "succstayed the saem" << endl;
+            } else {
+                sweeplineY = 6;
+                cout << "succchanged" << endl;
+                cout << min->getBreakpoint()->first->toString() << " " << min->getBreakpoint()->second->toString() << " " << min->computeIntersection(sweeplineY) << endl;
+                cout << succ->getBreakpoint()->first->toString() << " " << succ->getBreakpoint()->second->toString() << " " << succ->computeIntersection(sweeplineY) << endl;
+                succ = bl->getSuccessor(succ);
+                cout << succ->getBreakpoint()->first->toString() << " " << succ->getBreakpoint()->second->toString() << " " << succ->computeIntersection(sweeplineY) << endl;
+                succ = bl->getSuccessor(succ);
+                if(succ) cout << succ->getBreakpoint()->first->toString() << " " << succ->getBreakpoint()->second->toString() << " " << succ->computeIntersection(sweeplineY) << endl;
+            }
+
+            /* cout << min->computeIntersection(sweeplineY) << endl; */
+
+    /*         e2 = nullptr; */
+    /*         first = false; */
+    /*     } else { */
+    /*         /1* bl->handleSiteEvent(e1->se); *1/ */
+    /*         bl->insert(e1,e2); */
+    /*         bl->insert(e2,e1); */
+    /*     } */
+    /*     /1*     if(count < 10) { *1/ */
+    /*     /1*         count++; *1/ */
+    /*     /1*         if(e1->type == SiteE) { *1/ */
+    /*     /1*             bl->handleSiteEvent(e1->se); *1/ */
+    /*     /1*         } else { *1/ */
+    /*     /1*             bl->handleCircleEvent(e1->ce); *1/ */
+    /*     /1*         } *1/ */
+    /*     /1*     } *1/ */
+    /*     /1* } *1/ */
+
+    /* } */
 
     /* BLNode* min = bl->findMin(); */
     /* cout << "first " << min << endl; */
