@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cmath>
 #include <stack>
+#include <cassert>
 
 #include <iostream>
 using namespace std;
@@ -48,24 +49,27 @@ BLNode::BLNode() {
     lNode = rNode = parent = nullptr;
 }
 
-BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) {
+BLNode::~BLNode() {
+    if(breakpoint) {
+        delete breakpoint;
+        breakpoint = nullptr;
+    }
+}
+
+BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) : breakpoint(b), edge(e) {
     p = nullptr;
-    breakpoint = b;
-    edge = e;
     lEvent = rEvent = nullptr;
     lNode = rNode = parent = nullptr;
 }
 
-BLNode::BLNode(Breakpoint* b) {
+BLNode::BLNode(Breakpoint* b) : breakpoint(b) {
     p = nullptr;
-    breakpoint = b;
     edge = new DCEL_Edge;
     lNode = rNode = parent = nullptr;
 }
 
 // Used only in the first case (add a single leaf)
-BLNode::BLNode(Point* p) {
-    this->p = p;
+BLNode::BLNode(Point* p) : p(p) {
     breakpoint = nullptr;
     edge = nullptr;
     lEvent = nullptr;
@@ -95,8 +99,6 @@ Point* BLNode::getPoint() const {
 
 double BLNode::computeIntersection(double sweeplineY) const {
 
-    // As a hack to get site event insertion of points to work, and to allow insertion of
-    // two breakpoints that appear to be at the same location, points are shited slightly
     Point* p;
     if((p = getPoint())) {
         return p->x;
@@ -108,7 +110,6 @@ double BLNode::computeIntersection(double sweeplineY) const {
     if(getBreakpoint()->second->y == sweeplineY) {
         return getBreakpoint()->second->x;
     }
-
 
     double ay = getBreakpoint()->first->y - sweeplineY;
     double bx = getBreakpoint()->second->x - getBreakpoint()->first->x;
@@ -128,7 +129,7 @@ double BLNode::computeIntersection(double sweeplineY) const {
 
 
 Beachline::Beachline(Event* e1, Event* e2) {
-    root = nullptr; // Required to prevent root from getting some address on the stack
+    root = nullptr;
     root = insert(e1,e2);
     insert(e2,e1);
 }
@@ -136,6 +137,7 @@ Beachline::Beachline(Event* e1, Event* e2) {
 Beachline::~Beachline() {
     // TODO rewrite without recursion using a stack
     destroyTree(root);
+    root = nullptr;
 }
 
 bool Beachline::isEmpty() const {
@@ -147,6 +149,7 @@ void Beachline::destroyTree(BLNode* node) {
         destroyTree(node->lNode);
         destroyTree(node->rNode);
         delete node;
+        node = nullptr;
     }
 }
 
@@ -162,8 +165,8 @@ BLNode* Beachline::rotateLeft(BLNode* t) {
     u->parent = t->parent;
     t->parent = u;
 
-    t->height = std::max(height(t->lNode),height(t->rNode)) + 1;
-    u->height = std::max(height(t->rNode),height(t)) + 1;
+    updateHeight(t);
+    updateHeight(u);
 
     return u;
 }
@@ -185,8 +188,8 @@ BLNode* Beachline::rotateRight(BLNode* t) {
     u->parent = t->parent;
     t->parent = u;
 
-    t->height = std::max(height(t->lNode),height(t->rNode)) + 1;
-    u->height = std::max(height(u->lNode),height(t)) + 1;
+    updateHeight(t);
+    updateHeight(u);
 
     return u;
 }
@@ -196,53 +199,80 @@ BLNode* Beachline::doubleRotateRight(BLNode* t) {
     return rotateRight(t);
 }
 
+void checkInvariants(BLNode* t) {
+    if(t->lNode) {
+        assert(t->lNode->computeIntersection(sweeplineY) <= t->computeIntersection(sweeplineY));
+        if(t->rNode) {
+            assert(t->lNode->computeIntersection(sweeplineY) <= t->rNode->computeIntersection(sweeplineY));
+        }
+    }
+    if(t->rNode) {
+        assert(t->rNode->computeIntersection(sweeplineY) >= t->computeIntersection(sweeplineY));
+        if(t->lNode) {
+            assert(t->lNode->computeIntersection(sweeplineY) <= t->rNode->computeIntersection(sweeplineY));
+        }
+    }
+    if(t->lNode) {
+        checkInvariants(t->lNode);
+    }
+    if(t->rNode) {
+        checkInvariants(t->rNode);
+    }
+}
+
 BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
+    double nIntersect, tIntersect, tLIntersect, tRIntersect;
+
     if(t == nullptr) {
-        cout << "Inserted a node" << endl;
         t = node;
         t->height = 0;
         t->lNode = t->rNode = nullptr;
         t->parent = par;
-    } else if(node->computeIntersection(sweeplineY)
-            < t->computeIntersection(sweeplineY)) {
-
-        t->lNode = insert(node,t->lNode,t);
-
-        if(height(t->lNode) - height(t->rNode) == 2) {
-
-            if(node->computeIntersection(sweeplineY)
-             < t->lNode->computeIntersection(sweeplineY)) {
-                t = rotateRight(t);
-            } else {
-                t = doubleRotateRight(t);
-            }
-
-        }
-
     } else {
+        nIntersect = node->computeIntersection(sweeplineY);
+        tIntersect = t->computeIntersection(sweeplineY);
 
-        t->rNode = insert(node,t->rNode,t);
+        if(nIntersect < tIntersect) {
+            t->lNode = insert(node,t->lNode,t);
 
-        if(height(t->rNode) - height(t->lNode) == 2) {
+            checkInvariants(t);
 
-            if(node->computeIntersection(sweeplineY)
-             >= t->rNode->computeIntersection(sweeplineY)) {
-                t = rotateLeft(t);
-            } else {
-                t = doubleRotateLeft(t);
+            tLIntersect = t->lNode->computeIntersection(sweeplineY);
+
+            if(height(t->lNode) - height(t->rNode) == 2) {
+                if(nIntersect < tLIntersect){
+                    t = rotateRight(t);
+                } else {
+                    t = doubleRotateRight(t);
+                }
+            }
+        } else {
+            checkInvariants(t);
+            t->rNode = insert(node,t->rNode,t);
+
+            checkInvariants(t);
+
+            tRIntersect = t->rNode->computeIntersection(sweeplineY);
+
+            if(height(t->rNode) - height(t->lNode) == 2) {
+                if(nIntersect >= tRIntersect) {
+                    t = rotateLeft(t);
+                } else {
+                    t = doubleRotateLeft(t);
+                }
             }
 
         }
-
     }
 
-    t->height = std::max(height(t->lNode),height(t->rNode)) + 1;
-
+    updateHeight(t);
+    checkInvariants(t);
     return t;
 }
 
-BLNode* Beachline::insert(BLNode* node) {
-    return insert(node,root,nullptr);
+void Beachline::insert(BLNode* node) {
+    root = insert(node,root,nullptr);
+    checkInvariants(root);
 }
 
 BLNode* Beachline::insert(Event* e1, Event* e2) {
@@ -264,23 +294,24 @@ BLNode* Beachline::insert(Event* e1, Event* e2) {
     e->sibling->sibling = e;
 
     node->setEdge(e);
-    root = insert(node);
+    insert(node);
 
     return node;
 }
 
 NodePair* Beachline::insert(Point* p) {
-    Breakpoint* bp;
     BLNode *pred, *succ;
     BLNode *n1, *n2;
+    Breakpoint* bp;
 
     NodePair* nodes = new NodePair;
     n1 = new BLNode(p);
     n2 = new BLNode;
-    root = insert(n1);
+    insert(n1);
 
     pred = getPredecessor(n1);
     succ = getSuccessor(n1);
+
     if(pred) {
         bp = new Breakpoint;
         *bp = make_pair(pred->getBreakpoint()->second,p);
@@ -299,7 +330,7 @@ NodePair* Beachline::insert(Point* p) {
         *bp = make_pair(succ->getBreakpoint()->first,p);
         n2->setBreakpoint(bp);
     }
-    root = insert(n2);
+    insert(n2);
 
     *nodes = std::make_pair(n1,n2);
     return nodes;
@@ -363,29 +394,34 @@ void Beachline::remove(BLNode* n) {
 
 // Fails if the node requested for removal is not in tree
 BLNode* Beachline::remove(BLNode* n, BLNode* t) {
+    double nIntersect, tIntersect;
     BLNode* temp;
 
+    // Search returned null
     if(t == nullptr) {
         return nullptr;
+    } else {
+        nIntersect = n->computeIntersection(sweeplineY);
+        tIntersect = t->computeIntersection(sweeplineY);
     }
 
     // Searching
-    else if(n->computeIntersection(sweeplineY)
-            < t->computeIntersection(sweeplineY)) {
+    if(nIntersect < tIntersect) {
         t->lNode = remove(n,t->lNode);
-    } else if(n->computeIntersection(sweeplineY)
-            >= t->computeIntersection(sweeplineY)) {
+    } else if(nIntersect > tIntersect) {
         t->rNode = remove(n,t->rNode);
     }
 
     // Element found with 2 children
-    // Finds least node in right subtree and swaps it in
+    // Swaps the successor into its place
     else if(t->lNode && t->rNode) {
         temp = t;
-        t = findMin(t->rNode);
+        t = getSuccessor(t);
+
         t->parent = temp->parent;
         t->lNode = temp->lNode;
         t->rNode = temp->rNode;
+
         delete temp;
     }
 
@@ -393,38 +429,40 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
     // If there's a child, it's shifted up. Otherwise, we're at a leaf and removal
     // is trivial.
     else {
-        temp = t;
-        if(t->lNode == nullptr) {
-            t->rNode->parent = t->parent;
-            t = t->rNode;
-        } else if(t->rNode == nullptr) {
-            t->lNode->parent = t->parent;
-            t = t->lNode;
+        BLNode* updateVal;
+        if(t->lNode == nullptr && t->rNode == nullptr) {
+            updateVal = nullptr;
+        } else if(t->rNode) {
+            updateVal = t->rNode;
+        } else {
+            updateVal = t->lNode;
         }
-        delete temp;
-    }
-    if(t == nullptr) {
-        return t;
+        removeAndUpdateParent(t,updateVal);
+        t = updateVal;
     }
 
-    t->height = std::max(height(t->lNode),height(t->rNode));
+    // Search leads to null
+    if(t == nullptr) {
+        return nullptr;
+    }
+
+    updateHeight(t);
 
     // Balancing Checks
-
     if(height(t->lNode) - height(t->rNode) == 2) {
 
         if(height(t->lNode->lNode) - height(t->lNode->rNode) == 1) {
-            return rotateLeft(t);
+            return rotateRight(t);
         } else {
-            return doubleRotateLeft(t);
+            return doubleRotateRight(t);
         }
 
     } else if(height(t->rNode) - height(t->lNode) == 2) {
 
         if(height(t->rNode->rNode) - height(t->rNode->lNode) == 1) {
-            return rotateRight(t);
-        } else{
-            return doubleRotateRight(t);
+            return rotateLeft(t);
+        } else {
+            return doubleRotateLeft(t);
         }
 
     }
@@ -432,8 +470,32 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
     return t;
 }
 
+void Beachline::removeAndUpdateParent(BLNode* t, BLNode* updateVal) {
+    if(updateVal) {
+        updateVal->parent = t->parent;
+    }
+
+    if(t->parent) {
+        if(t->parent->lNode == t) {
+            t->parent->lNode = updateVal;
+        } else {
+            t->parent->rNode = updateVal;
+        }
+
+        updateHeight(t->parent);
+    }
+
+    delete t;
+}
+
 double Beachline::height(BLNode* n) {
-    return n == NULL ? -1 : n->height;
+    return n == nullptr ? -1 : n->height;
+}
+
+void Beachline::updateHeight(BLNode* n) {
+    if(n) {
+        n->height = std::max(height(n->lNode),height(n->rNode)) + 1;
+    }
 }
 
 void Beachline::handleSiteEvent(SiteEvent* se) {
@@ -443,12 +505,10 @@ void Beachline::handleSiteEvent(SiteEvent* se) {
     BLNode* pred = getPredecessor(nodes->first);
     if(pred && pred->rEvent) {
         pred->rEvent->deleted = true;
-        cout << "Deleted an old ce" << endl;
     }
     BLNode* succ = getSuccessor(nodes->second);
     if(succ && succ->lEvent) {
         succ->lEvent->deleted = true;
-        cout << "Deleted an old ce" << endl;
     }
 
     evaluateCircleEventCandidate(nodes);
@@ -503,7 +563,6 @@ void Beachline::pushEvent(Circle* c, BLNode* l, BLNode* r) const {
         l->lEvent = ce;
         r->rEvent = ce;
         eq.push(new Event(ce));
-        cout << "Pushed CE onto queue" << endl;
     }
 }
 

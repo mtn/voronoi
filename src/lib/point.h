@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class Line;
 
 class Point {
@@ -18,6 +20,8 @@ class Point {
         static double dist(const Point* a, const Point* b);
         static Point* midPoint(Point* a, Point* b);
         static double slope(Point* a, Point* b);
+
+        std::string toString() const;
 
 };
 

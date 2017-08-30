@@ -13,9 +13,8 @@
 
 using namespace std;
 
-double sweeplineY; // This might only be safe to update on sevents and after cevents
+double sweeplineY;
 EventQueue eq;
-
 
 template<typename T> void print_queue(T& q) {
     while(!q.empty()) {
@@ -37,6 +36,12 @@ int main(int argc, char** argv) {
     double boundX = 0, boundY = 0;
     if(argc > 1) {
         ifstream fs(argv[1]);
+
+        if(!fs) {
+            cerr << "File was not opened successfully! Exiting." << endl;
+            return 1;
+        }
+
         double a, b;
         Event* tmp;
 
@@ -54,7 +59,7 @@ int main(int argc, char** argv) {
         fs.close();
     } else { // Generates the points and stores them in last.in for further testing
         boundX = boundY = 1;
-        exit(0);
+        return 0;
     }
 
     /* Graphics* g = new Graphics; */
@@ -64,43 +69,40 @@ int main(int argc, char** argv) {
 
     /* g->close(); */
 
-    int count = 0;
-    bool first = true;
+    /* bool first = true; */
     Event *e1, *e2;
     Beachline* bl;
-    while(!eq.empty()) {
+    /* while(!eq.empty()) { */
         e1 = eq.top();
         eq.pop();
 
-        // TODO handle degenerate case where the first two sites have the same y
-        if(first) {
-            e2 = eq.top();
-            eq.pop();
-            bl = new Beachline(e1,e2);
+        e2 = eq.top();
+        eq.pop();
 
-            e2 = nullptr;
-            first = false;
+        bl = new Beachline(e1,e2);
+
+        BLNode* min = bl->findMin();
+
+        cout << "e1 " << e1->se->toString() << endl;
+        cout << "e2 " << e2->se->toString() << endl;
+
+        e1 = eq.top();
+        eq.pop();
+
+        if(e1->type == SiteE) {
+            cout << "It was a site event " << e1->se->toString() << endl;
         } else {
-            if(count < 10) {
-                count++;
-                if(e1->type == SiteE) {
-                    bl->handleSiteEvent(e1->se);
-                } else {
-                    bl->handleCircleEvent(e1->ce);
-                }
-            }
+            cout << "not a se" << endl;
+        }
+        bl->handleSiteEvent(e1->se);
+
+        sweeplineY = 5.01;
+
+        min = bl->findMin();
+        while(min) {
+            cout << "int " << min->computeIntersection(sweeplineY) << endl;
+            bl->remove(min);
+            min = bl->findMin();
         }
 
-    }
-
-    BLNode* min;
-    sweeplineY = boundY;
-    min = bl->findMin();
-    while(min) {
-        cout << min->computeIntersection(sweeplineY) << endl;
-        min = bl->getSuccessor(min);
-    }
-    cout << endl;
-    cout << count << endl;
 }
-

@@ -63,6 +63,7 @@ class BLNode {
 
     public:
         BLNode();
+        ~BLNode();
         BLNode(Point* p); // Intended only for the initial insertion
         BLNode(Breakpoint* b);
         BLNode(Breakpoint* b, DCEL_Edge* e);
@@ -131,15 +132,17 @@ class Beachline {
         void handleCircleEvent(CircleEvent* ce);
         void handleSiteEvent(SiteEvent* pe);
 
-    private:
+        BLNode* insert(Event* e1, Event* e2);
+
         BLNode* root;
+    private:
 
         void destroyTree(BLNode* x);
         BLNode* remove(BLNode* node, BLNode* temp);
+        void removeAndUpdateParent(BLNode* n, BLNode* updateVal);
 
         NodePair* insert(Point* p);
-        BLNode* insert(BLNode* node);
-        BLNode* insert(Event* e1, Event* e2);
+        void insert(BLNode* node);
         BLNode* insert(BLNode* node, BLNode* t, BLNode* par);
 
         BLNode* rotateLeft(BLNode* node);
@@ -151,6 +154,7 @@ class Beachline {
         BLNode* findMax(BLNode* n) const;
 
         double height(BLNode* n);
+        void updateHeight(BLNode* n);
 
         // Beachline operations
         void evaluateCircleEventCandidate(NodePair* n) const;
