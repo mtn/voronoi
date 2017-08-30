@@ -134,8 +134,8 @@ class Beachline {
 
         BLNode* insert(Event* e1, Event* e2);
 
-    private:
         BLNode* root;
+    private:
 
         void destroyTree(BLNode* x);
         BLNode* remove(BLNode* node, BLNode* temp);

@@ -92,16 +92,11 @@ int main(int argc, char** argv) {
             cout << "intersection " << min->computeIntersection(sweeplineY) << endl;
             BLNode* succ = bl->getSuccessor(min);
             cout << "succ " << succ->computeIntersection(sweeplineY) << endl;
-            cout << "succ" << succ << " " << succ->parent << " mini "<< min << " " << min->rNode << " " << min->lNode << endl;
-            cout << "removing min" << endl;
-            cout << "before it's the new min " << succ << " " <<  succ->parent << endl;
-            cout << "min "  << min << " root " << bl->root << endl;
+            cout << "removing min" << endl
             bl->remove(min);
-            cout << "should be new min " << succ << " " <<  succ->parent << endl;
-            cout << "removed min.new min int : " << succ->computeIntersection(sweeplineY) << endl;
-            min = bl->findMin();
-            cout << "min " << min << endl;
+            BLNode* oldmin = min;
 
+            BLNode* oldsucc = succ;
 
             e1 = eq.top();
             eq.pop();
@@ -111,40 +106,39 @@ int main(int argc, char** argv) {
             } else {
                 cout << "not a se" << endl;
             }
-            return 0;
             bl->handleSiteEvent(e1->se);
 
             // Should be a circle event
             /* cout << "poppinmg" << endl; */
-            /* e1 = eq.top(); */
-            /* eq.pop(); */
-            /* if(e1->type == CircleE) { */
-            /*     cout << "It was a circle event" << endl; */
-            /*     bl->handleCircleEvent(e1->ce); */
-            /* } else { */
-            /*     cout << "It wasn't a circle event" << endl; */
-            /*     cout << e1->se->toString() << endl; */
-            /* } */
+            e1 = eq.top();
+            eq.pop();
+            if(e1->type == CircleE) {
+                cout << "It was a circle event" << endl;
+                bl->handleCircleEvent(e1->ce);
+            } else {
+                cout << "It wasn't a circle event" << endl;
+                cout << e1->se->toString() << endl;
+            }
 
-            /* min = bl->findMin(); */
-            /* /1* if(min == oldmin) { *1/ */
-            /* /1*     cout << "min stayed the saem" << endl; *1/ */
-            /* /1* } else { *1/ */
-            /* /1*     cout << "min changed" << endl; *1/ */
-            /* /1* } *1/ */
-            /* succ = bl->getSuccessor(min); */
-            /* /1* if(succ == oldsucc) { *1/ */
-            /* /1*     cout << "succstayed the saem" << endl; *1/ */
-            /* /1* } else { *1/ */
-            /*     sweeplineY = 5.011; */
-            /*     cout << "succchanged" << endl; */
-            /*     cout << min->getBreakpoint()->first->toString() << " " << min->getBreakpoint()->second->toString() << " " << min->computeIntersection(sweeplineY) << endl; */
-            /*     cout << succ->getBreakpoint()->first->toString() << " " << succ->getBreakpoint()->second->toString() << " " << succ->computeIntersection(sweeplineY) << endl; */
-            /*     succ = bl->getSuccessor(succ); */
-            /*     cout << succ->getBreakpoint()->first->toString() << " " << succ->getBreakpoint()->second->toString() << " " << succ->computeIntersection(sweeplineY) << endl; */
-            /*     succ = bl->getSuccessor(succ); */
-            /*     if(succ) cout << succ->getBreakpoint()->first->toString() << " " << succ->getBreakpoint()->second->toString() << " " << succ->computeIntersection(sweeplineY) << endl; */
-            /* } */
+            min = bl->findMin();
+            if(min == oldmin) {
+                cout << "min stayed the saem" << endl;
+            } else {
+                cout << "min changed" << endl;
+            }
+            succ = bl->getSuccessor(min);
+            if(succ == oldsucc) {
+                cout << "succstayed the saem" << endl;
+            } else {
+                sweeplineY = 5.011;
+                cout << "succchanged" << endl;
+                cout << min->getBreakpoint()->first->toString() << " " << min->getBreakpoint()->second->toString() << " " << min->computeIntersection(sweeplineY) << endl;
+                cout << succ->getBreakpoint()->first->toString() << " " << succ->getBreakpoint()->second->toString() << " " << succ->computeIntersection(sweeplineY) << endl;
+                succ = bl->getSuccessor(succ);
+                cout << succ->getBreakpoint()->first->toString() << " " << succ->getBreakpoint()->second->toString() << " " << succ->computeIntersection(sweeplineY) << endl;
+                succ = bl->getSuccessor(succ);
+                if(succ) cout << succ->getBreakpoint()->first->toString() << " " << succ->getBreakpoint()->second->toString() << " " << succ->computeIntersection(sweeplineY) << endl;
+            }
 
             /* cout << min->computeIntersection(sweeplineY) << endl; */
 

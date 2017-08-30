@@ -357,6 +357,7 @@ BLNode* Beachline::findMin() const {
 
 BLNode* Beachline::findMin(BLNode* n) const {
     if(n == nullptr) {
+        cout << "returning early from this case " << endl;
         return nullptr;
     } else if(n->lNode == nullptr){
         return n;
@@ -444,14 +445,16 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
     // If there's a child, it's shifted up. Otherwise, we're at a leaf and removal
     // is trivial.
     else {
+        BLNode* updateVal;
         if(t->lNode == nullptr && t->rNode == nullptr) {
-            removeAndUpdateParent(t,nullptr);
+            updateVal = nullptr;
         } else if(t->rNode) {
-            removeAndUpdateParent(t,t->rNode);
+            updateVal = t->rNode;
         } else {
-            removeAndUpdateParent(t,t->lNode);
+            updateVal = t->lNode;
         }
-        t = nullptr;
+        removeAndUpdateParent(t,updateVal);
+        t = updateVal;
     }
 
     // Search leads to null
@@ -530,7 +533,11 @@ void Beachline::handleSiteEvent(SiteEvent* se) {
         cout << "Deleted an old ce" << endl;
     }
 
+    cout << "Checking for circle event candidates" << endl;
+    cout << nodes->first->getBreakpoint()->first->toString() << " " << nodes->first->getBreakpoint()->second->toString() << endl;
+    cout << nodes->second->getBreakpoint()->first->toString() << " " << nodes->second->getBreakpoint()->second->toString() << endl;
     evaluateCircleEventCandidate(nodes);
+    cout << "finished checking" << endl;
 
     // add 2 half edges to the dcel
 
@@ -582,6 +589,7 @@ void Beachline::pushEvent(Circle* c, BLNode* l, BLNode* r) const {
         l->lEvent = ce;
         r->rEvent = ce;
         eq.push(new Event(ce));
+        cout << "coming off at " << ce->c->radius + ce->c->center->y << endl;
         cout << "Pushed CE onto queue" << endl;
     }
 }
