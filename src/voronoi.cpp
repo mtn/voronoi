@@ -195,9 +195,7 @@ BLNode* Beachline::rotateRight(BLNode* t) {
 }
 
 BLNode* Beachline::doubleRotateRight(BLNode* t) {
-    cout << "starting lrotate of left" << endl;
     t->lNode = rotateLeft(t->lNode);
-    cout << "starting right rotate" << endl;
     return rotateRight(t);
 }
 
@@ -209,7 +207,6 @@ void checkInvariants(BLNode* t) {
         }
     }
     if(t->rNode) {
-        /* cout << t->rNode->computeIntersection(sweeplineY) << " " << t->computeIntersection(sweeplineY) << endl; */
         assert(t->rNode->computeIntersection(sweeplineY) >= t->computeIntersection(sweeplineY));
         if(t->lNode) {
             assert(t->lNode->computeIntersection(sweeplineY) <= t->rNode->computeIntersection(sweeplineY));
@@ -227,7 +224,6 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
     double nIntersect, tIntersect, tLIntersect, tRIntersect;
 
     if(t == nullptr) {
-        cout << "Inserted a node" << endl;
         t = node;
         t->height = 0;
         t->lNode = t->rNode = nullptr;
@@ -239,7 +235,6 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
         if(nIntersect < tIntersect) {
             t->lNode = insert(node,t->lNode,t);
 
-            cout << "checking invariants 2" << endl;
             checkInvariants(t);
 
             tLIntersect = t->lNode->computeIntersection(sweeplineY);
@@ -252,11 +247,9 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
                 }
             }
         } else {
-            cout << "checking invariants a1" << endl;
             checkInvariants(t);
             t->rNode = insert(node,t->rNode,t);
 
-            cout << "checking invariants a" << endl;
             checkInvariants(t);
 
             tRIntersect = t->rNode->computeIntersection(sweeplineY);
@@ -273,7 +266,6 @@ BLNode* Beachline::insert(BLNode* node, BLNode* t, BLNode* par) {
     }
 
     updateHeight(t);
-    cout << "checking invariants 3" << endl;
     checkInvariants(t);
     return t;
 }
@@ -319,31 +311,24 @@ NodePair* Beachline::insert(Point* p) {
 
     pred = getPredecessor(n1);
     succ = getSuccessor(n1);
-    cout << "n1 " << n1->computeIntersection(sweeplineY) << endl;
-    if(pred) cout << " pred " << pred->computeIntersection(sweeplineY) << endl;
-    if(succ) cout << " succ" << succ->computeIntersection(sweeplineY) << endl;
 
     if(pred) {
         bp = new Breakpoint;
         *bp = make_pair(pred->getBreakpoint()->second,p);
         n1->setBreakpoint(bp);
-        cout << bp->first->x << "," << bp->first->y << "  " << bp->second->x << "," << bp->second->y <<" " << n1->computeIntersection(sweeplineY) << endl;
 
         bp = new Breakpoint;
         *bp = make_pair(p,pred->getBreakpoint()->second);
         n2->setBreakpoint(bp);
-        cout << bp->first->x << "," << bp->first->y << "  " << bp->second->x << "," << bp->second->y << " " << n2->computeIntersection(sweeplineY) << endl;
 
     } else if(succ){
         bp = new Breakpoint;
         *bp = make_pair(p,succ->getBreakpoint()->first);
         n1->setBreakpoint(bp);
-        cout << bp->first->x << "," << bp->first->y << "  " << bp->second->x << "," << bp->second->y <<" " << n1->computeIntersection(sweeplineY) << endl;
 
         bp = new Breakpoint;
         *bp = make_pair(succ->getBreakpoint()->first,p);
         n2->setBreakpoint(bp);
-        cout << bp->first->x << "," << bp->first->y << "  " << bp->second->x << "," << bp->second->y << " " << n2->computeIntersection(sweeplineY) << endl;
     }
     insert(n2);
 
@@ -481,7 +466,6 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
         }
 
     }
-    cout << "end rebalancing" << endl;
 
     return t;
 }
@@ -521,19 +505,13 @@ void Beachline::handleSiteEvent(SiteEvent* se) {
     BLNode* pred = getPredecessor(nodes->first);
     if(pred && pred->rEvent) {
         pred->rEvent->deleted = true;
-        cout << "Deleted an old ce" << endl;
     }
     BLNode* succ = getSuccessor(nodes->second);
     if(succ && succ->lEvent) {
         succ->lEvent->deleted = true;
-        cout << "Deleted an old ce" << endl;
     }
 
-    cout << "Checking for circle event candidates" << endl;
-    cout << nodes->first->getBreakpoint()->first->toString() << " " << nodes->first->getBreakpoint()->second->toString() << endl;
-    cout << nodes->second->getBreakpoint()->first->toString() << " " << nodes->second->getBreakpoint()->second->toString() << endl;
     evaluateCircleEventCandidate(nodes);
-    cout << "finished checking" << endl;
 
     // add 2 half edges to the dcel
 
@@ -585,8 +563,6 @@ void Beachline::pushEvent(Circle* c, BLNode* l, BLNode* r) const {
         l->lEvent = ce;
         r->rEvent = ce;
         eq.push(new Event(ce));
-        cout << "coming off at " << ce->c->radius + ce->c->center->y << endl;
-        cout << "Pushed CE onto queue" << endl;
     }
 }
 
