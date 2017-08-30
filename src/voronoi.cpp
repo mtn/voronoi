@@ -357,7 +357,6 @@ BLNode* Beachline::findMin() const {
 
 BLNode* Beachline::findMin(BLNode* n) const {
     if(n == nullptr) {
-        cout << "returning early from this case " << endl;
         return nullptr;
     } else if(n->lNode == nullptr){
         return n;
@@ -465,23 +464,20 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
     updateHeight(t);
 
     // Balancing Checks
-    cout << "start rebalancing" << endl;
     if(height(t->lNode) - height(t->rNode) == 2) {
 
         if(height(t->lNode->lNode) - height(t->lNode->rNode) == 1) {
-            return rotateLeft(t);
+            return rotateRight(t);
         } else {
-            return doubleRotateLeft(t);
+            return doubleRotateRight(t);
         }
 
     } else if(height(t->rNode) - height(t->lNode) == 2) {
 
         if(height(t->rNode->rNode) - height(t->rNode->lNode) == 1) {
-            return rotateRight(t);
-        } else{
-            cout << "double rt" << endl;
-            return doubleRotateRight(t);
-            cout << " finish" << endl;
+            return rotateLeft(t);
+        } else {
+            return doubleRotateLeft(t);
         }
 
     }
