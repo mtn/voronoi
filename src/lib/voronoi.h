@@ -38,7 +38,7 @@ typedef struct Event {
     EventType type;
 
     // One of these will be null
-    // TODO use union
+    // TODO use union/inheritance
     CircleEvent* ce;
     SiteEvent* se;
 } Event;

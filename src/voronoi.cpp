@@ -502,6 +502,7 @@ void Beachline::handleEvent(Event* e) {
     if (e->type == SiteE) {
         cout << "Handling site event" << endl;
         handleEvent(e->se);
+        cout << "returned" << endl;
     } else {
         cout << "(not )handling circle event" << endl;
         handleEvent(e->ce);
@@ -510,30 +511,34 @@ void Beachline::handleEvent(Event* e) {
 
 void Beachline::handleEvent(SiteEvent* se) {
     sweeplineY = se->y;
+    cout << "1" << endl;
     NodePair* nodes = insert(se);
+    cout << "2" << endl;
 
     BLNode* pred = getPredecessor(nodes->first);
+    cout << "3" << endl;
     if(pred && pred->rEvent) {
+        cout << "3.5" << endl;
         pred->rEvent->deleted = true;
     }
+    cout << "4" << endl;
     BLNode* succ = getSuccessor(nodes->second);
+    cout << "5" << endl;
     if(succ && succ->lEvent) {
         succ->lEvent->deleted = true;
     }
+    cout << "6" << endl;
 
     evaluateCircleEventCandidate(nodes);
+    cout << "7" << endl;
 
     // add 2 half edges to the dcel
 
     delete nodes;
+    cout << "8" << endl;
 }
 
 void Beachline::handleEvent(CircleEvent* ce) {
-    return;
-
-    if (ce->c->center->y + ce->c->radius == sweeplineY) {
-        ce->deleted = true;
-    }
 
     if(ce->deleted) {
         return;
@@ -557,7 +562,9 @@ void Beachline::evaluateCircleEventCandidate(NodePair* n) const {
         const Point* r = n->first->getBreakpoint()->first;
         const Point* s = n->first->getBreakpoint()->second;
         Circle* c = Circle::computeCircumcircle(q,r,s);
-        pushEvent(c,n->first,pred);
+        if(c) {
+            pushEvent(c,n->first,pred);
+        }
     }
 
     BLNode* succ = getSuccessor(n->second);
@@ -566,7 +573,9 @@ void Beachline::evaluateCircleEventCandidate(NodePair* n) const {
         const Point* r = n->second->getBreakpoint()->first;
         const Point* s = n->second->getBreakpoint()->second;
         Circle* c = Circle::computeCircumcircle(q,r,s);
-        pushEvent(c,succ,n->second);
+        if(c) {
+            pushEvent(c,succ,n->second);
+        }
     }
 }
 

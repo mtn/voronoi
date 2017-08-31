@@ -1,8 +1,5 @@
 #include "lib/circle.h"
 
-#include <cstdbool>
-#include <cstddef>
-#include <iostream>
 
 Circle::Circle(Point* center, double radius) {
     this->center = center;
@@ -16,6 +13,9 @@ Circle* Circle::computeCircumcircle(const Point* a, const Point* b, const Point*
     double baLength = (ba->x * ba->x) + (ba->y * ba->y);
     double caLength = (ca->x * ca->x) + (ca->y * ca->y);
     double denominator = 2 * (ba->x * ca->y - ba->y * ca->x);
+    if (denominator <= 0) {
+        return nullptr;
+    }
 
     double x = a->x + (ca->y * baLength - ba->y * caLength) / denominator ;
     double y = a->y + (ba->x * caLength - ca->x * baLength) / denominator ;

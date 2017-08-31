@@ -14,5 +14,5 @@ r:
 
 .PHONY: clean
 clean:
-	rm -f $(obj) thiessen
+	rm -f $(obj) thiessen *.swp
 
