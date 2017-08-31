@@ -69,40 +69,32 @@ int main(int argc, char** argv) {
 
     /* g->close(); */
 
-    /* bool first = true; */
+    bool first = true;
     Event *e1, *e2;
     Beachline* bl;
-    /* while(!eq.empty()) { */
+    while(!eq.empty()) {
         e1 = eq.top();
         eq.pop();
 
-        e2 = eq.top();
-        eq.pop();
+        if(first) {
+            e2 = eq.top();
+            eq.pop();
 
-        bl = new Beachline(e1,e2);
+            bl = new Beachline(e1,e2);
 
-        BLNode* min = bl->findMin();
-
-        cout << "e1 " << e1->se->toString() << endl;
-        cout << "e2 " << e2->se->toString() << endl;
-
-        e1 = eq.top();
-        eq.pop();
-
-        if(e1->type == SiteE) {
-            cout << "It was a site event " << e1->se->toString() << endl;
+            e2 = nullptr;
+            first = false;
         } else {
-            cout << "not a se" << endl;
+            bl->handleEvent(e1);
         }
-        bl->handleSiteEvent(e1->se);
 
-        sweeplineY = 5.01;
+    }
 
+    sweeplineY = 5.01;
+    BLNode* min = bl->findMin();
+    while(min) {
+        cout << "int " << min->computeIntersection(sweeplineY) << endl;
+        bl->remove(min);
         min = bl->findMin();
-        while(min) {
-            cout << "int " << min->computeIntersection(sweeplineY) << endl;
-            bl->remove(min);
-            min = bl->findMin();
-        }
-
+    }
 }

@@ -498,7 +498,17 @@ void Beachline::updateHeight(BLNode* n) {
     }
 }
 
-void Beachline::handleSiteEvent(SiteEvent* se) {
+void Beachline::handleEvent(Event* e) {
+    if (e->type == SiteE) {
+        cout << "Handling site event" << endl;
+        handleEvent(e->se);
+    } else {
+        cout << "(not )handling circle event" << endl;
+        handleEvent(e->ce);
+    }
+}
+
+void Beachline::handleEvent(SiteEvent* se) {
     sweeplineY = se->y;
     NodePair* nodes = insert(se);
 
@@ -518,12 +528,17 @@ void Beachline::handleSiteEvent(SiteEvent* se) {
     delete nodes;
 }
 
-void Beachline::handleCircleEvent(CircleEvent* ce) {
-    sweeplineY = ce->c->center->y + ce->c->radius;
+void Beachline::handleEvent(CircleEvent* ce) {
+    return;
+
+    if (ce->c->center->y + ce->c->radius == sweeplineY) {
+        ce->deleted = true;
+    }
 
     if(ce->deleted) {
         return;
     }
+
 
     // add vertex, set it's loc as the center of the circle
     // delete

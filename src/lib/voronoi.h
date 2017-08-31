@@ -129,8 +129,7 @@ class Beachline {
         BLNode* getSuccessor(BLNode* node) const;
 
         // Beachline operations
-        void handleCircleEvent(CircleEvent* ce);
-        void handleSiteEvent(SiteEvent* pe);
+        void handleEvent(Event* e);
 
         BLNode* insert(Event* e1, Event* e2);
 
@@ -159,4 +158,7 @@ class Beachline {
         // Beachline operations
         void evaluateCircleEventCandidate(NodePair* n) const;
         void pushEvent(Circle* c, BLNode* l, BLNode* r) const;
+        void handleEvent(CircleEvent* ce);
+        void handleEvent(SiteEvent* pe);
+
 };
