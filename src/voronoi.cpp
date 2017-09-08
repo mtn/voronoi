@@ -42,6 +42,7 @@ CircleEvent::~CircleEvent() {
 }
 
 BLNode::BLNode() {
+    cout << "new node: " << this << endl;
     p = nullptr;
     breakpoint = nullptr;
     edge = nullptr;
@@ -65,6 +66,7 @@ BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) : breakpoint(b), edge(e) {
 BLNode::BLNode(Breakpoint* b) : breakpoint(b) {
     p = nullptr;
     edge = new DCEL_Edge;
+    lEvent = rEvent = nullptr;
     lNode = rNode = parent = nullptr;
 }
 
@@ -72,8 +74,7 @@ BLNode::BLNode(Breakpoint* b) : breakpoint(b) {
 BLNode::BLNode(Point* p) : p(p) {
     breakpoint = nullptr;
     edge = nullptr;
-    lEvent = nullptr;
-    rEvent = nullptr;
+    lEvent = rEvent = nullptr;
     lNode = rNode = parent = nullptr;
 }
 
@@ -511,31 +512,22 @@ void Beachline::handleEvent(Event* e) {
 
 void Beachline::handleEvent(SiteEvent* se) {
     sweeplineY = se->y;
-    cout << "1" << endl;
     NodePair* nodes = insert(se);
-    cout << "2" << endl;
 
     BLNode* pred = getPredecessor(nodes->first);
-    cout << "3" << endl;
     if(pred && pred->rEvent) {
-        cout << "3.5" << endl;
         pred->rEvent->deleted = true;
     }
-    cout << "4" << endl;
     BLNode* succ = getSuccessor(nodes->second);
-    cout << "5" << endl;
     if(succ && succ->lEvent) {
         succ->lEvent->deleted = true;
     }
-    cout << "6" << endl;
 
     evaluateCircleEventCandidate(nodes);
-    cout << "7" << endl;
 
     // add 2 half edges to the dcel
 
     delete nodes;
-    cout << "8" << endl;
 }
 
 void Beachline::handleEvent(CircleEvent* ce) {
