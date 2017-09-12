@@ -9,7 +9,7 @@
 #include <iostream>
 using namespace std;
 
-int returnOne(int a) {
+int returnOne(int a){
     return 1;
 }
 

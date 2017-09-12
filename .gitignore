@@ -32,6 +32,9 @@
 *.app
 thiessen
 
+build
+Testing
+
 *.sw*
 
 notes.txt

@@ -17,7 +17,6 @@ extern double sweeplineY;
 
 int returnOne(int a);
 
-
 class BLNode;
 typedef struct CircleEvent {
     CircleEvent(Circle* c, BLNode* b1, BLNode* b2);
