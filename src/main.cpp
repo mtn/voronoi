@@ -32,6 +32,7 @@ template<typename T> void print_queue(T& q) {
 
 int main(int argc, char** argv) {
     // TODO Implement a bounded pq that supports random deletion
+    cout << "hi" << endl;
 
     double boundX = 0, boundY = 0;
     if(argc > 1) {
