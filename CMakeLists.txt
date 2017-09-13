@@ -3,6 +3,8 @@ project(Voronoi)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Voronoi_SOURCE_DIR}/cmake")
 
+option(BUILD_TESTS "Build unit tests." OFF)
+
 # Download and unpack googletest at configure time
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
 execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
@@ -41,4 +43,19 @@ add_executable(thiessen src/main.cc
                         src/circle.cc
                         src/graphics.cc)
 target_link_libraries(thiessen ${SDL2_LIBRARY})
+
+
+if(BUILD_TESTS)
+    enable_testing()
+    add_executable(sample_test tests/sample1_unittest.cc
+                               src/voronoi.cc
+                               src/point.cc
+                               src/line.cc
+                               src/dcel.cc
+                               src/circle.cc)
+    target_link_libraries(sample_test pthread)
+    target_link_libraries(sample_test gtest
+                                      gtest_main)
+    add_test(tests sample_test)
+endif(BUILD_TESTS)
 
