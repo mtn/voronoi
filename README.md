@@ -1,4 +1,5 @@
 # voronoi
+[![Build Status](https://travis-ci.org/mtn/voronoi.png)](https://travis-ci.org/mtn/voronoi)
 
 Voronoi is a readable, easy-to-use library for generating voronoi diagrams.
 
