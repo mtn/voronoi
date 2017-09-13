@@ -15,6 +15,7 @@ enum NodeColor       { Red, Black };
 
 extern double sweeplineY;
 
+int returnOne(int a);
 
 class BLNode;
 typedef struct CircleEvent {
@@ -67,6 +68,8 @@ class BLNode {
         BLNode(Point* p); // Intended only for the initial insertion
         BLNode(Breakpoint* b);
         BLNode(Breakpoint* b, DCEL_Edge* e);
+
+        std::string toString() const;
 
         void setBreakpoint(Breakpoint* bp);
         Breakpoint* getBreakpoint() const;

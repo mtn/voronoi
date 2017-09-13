@@ -9,6 +9,10 @@
 #include <iostream>
 using namespace std;
 
+int returnOne(int a){
+    return 1;
+}
+
 double getEventPriority(const Event* e) {
     if(e->type == SiteE) {
         return e->se->y;
@@ -65,6 +69,7 @@ BLNode::BLNode(Breakpoint* b, DCEL_Edge* e) : breakpoint(b), edge(e) {
 BLNode::BLNode(Breakpoint* b) : breakpoint(b) {
     p = nullptr;
     edge = new DCEL_Edge;
+    lEvent = rEvent = nullptr;
     lNode = rNode = parent = nullptr;
 }
 
@@ -72,9 +77,12 @@ BLNode::BLNode(Breakpoint* b) : breakpoint(b) {
 BLNode::BLNode(Point* p) : p(p) {
     breakpoint = nullptr;
     edge = nullptr;
-    lEvent = nullptr;
-    rEvent = nullptr;
+    lEvent = rEvent = nullptr;
     lNode = rNode = parent = nullptr;
+}
+
+std::string BLNode::toString() const {
+    return " <" + this->breakpoint->first->toString() + " " + this->breakpoint->second->toString() + "> ";
 }
 
 void BLNode::setBreakpoint(Breakpoint* bp) {
@@ -351,9 +359,9 @@ BLNode* Beachline::findMin(BLNode* n) const {
 }
 
 BLNode* Beachline::findMax(BLNode* n) const {
-    if(n == nullptr) {
+    if(!n) {
         return nullptr;
-    } else if(n->rNode == nullptr) {
+    } else if(!n->rNode) {
         return n;
     } else {
         return findMax(n->rNode);
@@ -361,12 +369,12 @@ BLNode* Beachline::findMax(BLNode* n) const {
 }
 
 BLNode* Beachline::getSuccessor(BLNode* n) const {
-    if(n->rNode != nullptr) {
+    if(n->rNode) {
         return findMin(n->rNode);
     }
 
     BLNode* p = n->parent;
-    while(p != nullptr && n == p->rNode) {
+    while(p && n == p->rNode) {
         n = p;
         p = p->parent;
     }
@@ -375,12 +383,12 @@ BLNode* Beachline::getSuccessor(BLNode* n) const {
 }
 
 BLNode* Beachline::getPredecessor(BLNode* n) const {
-    if(n->lNode != nullptr) {
+    if(n->lNode) {
         return findMax(n->lNode);
     }
 
     BLNode* p = n->parent;
-    while(p != nullptr && n == p->lNode) {
+    while(p && n == p->lNode) {
         n = p;
         p = p->parent;
     }
@@ -415,12 +423,21 @@ BLNode* Beachline::remove(BLNode* n, BLNode* t) {
     // Element found with 2 children
     // Swaps the successor into its place
     else if(t->lNode && t->rNode) {
+        /* cout << "IN THIS SECTION" << endl; */
+        cout << "removing " << t->toString();
         temp = t;
-        t = getSuccessor(t);
+        cout << t->toString() << temp->toString() << endl;
+        t = findMin(t->rNode);
+        cout << "swapping in " << t->toString() << endl;
+        cout << "temp (being removed)" << temp->toString() << endl;
 
         t->parent = temp->parent;
         t->lNode = temp->lNode;
-        t->rNode = temp->rNode;
+        if(t != temp->rNode) {
+            t->rNode = temp->rNode;
+        } else {
+            t->rNode = nullptr;
+        }
 
         delete temp;
     }
@@ -504,38 +521,30 @@ void Beachline::handleEvent(Event* e) {
         handleEvent(e->se);
         cout << "returned" << endl;
     } else {
-        cout << "(not )handling circle event" << endl;
+        cout << "handling circle event" << endl;
         handleEvent(e->ce);
+        cout << "returned" << endl;
     }
 }
 
 void Beachline::handleEvent(SiteEvent* se) {
     sweeplineY = se->y;
-    cout << "1" << endl;
     NodePair* nodes = insert(se);
-    cout << "2" << endl;
 
     BLNode* pred = getPredecessor(nodes->first);
-    cout << "3" << endl;
     if(pred && pred->rEvent) {
-        cout << "3.5" << endl;
         pred->rEvent->deleted = true;
     }
-    cout << "4" << endl;
     BLNode* succ = getSuccessor(nodes->second);
-    cout << "5" << endl;
     if(succ && succ->lEvent) {
         succ->lEvent->deleted = true;
     }
-    cout << "6" << endl;
 
     evaluateCircleEventCandidate(nodes);
-    cout << "7" << endl;
 
     // add 2 half edges to the dcel
 
     delete nodes;
-    cout << "8" << endl;
 }
 
 void Beachline::handleEvent(CircleEvent* ce) {
@@ -544,9 +553,46 @@ void Beachline::handleEvent(CircleEvent* ce) {
         return;
     }
 
+    Breakpoint* bp = new Breakpoint();
+    *bp = std::make_pair(ce->b1->breakpoint->first,ce->b2->breakpoint->second);
+    cout << "mkaing new bp with " << ce->b1->breakpoint->first->toString() << " " << ce->b2->breakpoint->second->toString() << endl;
+    cout << "ce nodes " << ce->b1->toString() << ce->b2->toString() << endl;
 
-    // add vertex, set it's loc as the center of the circle
-    // delete
+    cout << "ROOT " << root->toString() << endl;
+    BLNode* blah = getPredecessor(root);
+    while(blah) {
+        cout << "ROOT PRED" << blah->toString() << endl;
+        blah = getPredecessor(blah);
+    }
+    blah = getSuccessor(root);
+    while(blah) {
+        cout << "ROOT SUCC" << blah->toString() << endl;
+        blah = getSuccessor(blah);
+    }
+
+    BLNode* ins = new BLNode(bp);
+    cout << "Insertign node " << ins->toString() << endl;
+    insert(ins);
+
+    cout << "removing node"  << ce->b1->toString() << endl;
+    remove(ce->b1);
+    cout << "removing node"  << ce->b2->toString() << endl;
+    remove(ce->b2);
+
+    /* cout << "ROOT " << root->toString() << endl; */
+    /* blah = getPredecessor(root); */
+    /* cout << "pred " << blah->toString() << endl; */
+    /* cout << "pred pred " << getPredecessor(blah)->toString()  << endl; */
+    /* cout << "pred pred " << getPredecessor(getPredecessor(blah))->toString()  << endl; */
+    /* while(blah) { */
+    /*     cout << "ROOT PRED" << blah->toString() << endl; */
+    /*     blah = getPredecessor(blah); */
+    /* } */
+    /* blah = getSuccessor(root); */
+    /* while(blah) { */
+    /*     cout << "ROOT SUCC" << blah->toString() << endl; */
+    /*     blah = getSuccessor(blah); */
+    /* } */
 }
 
 // Enforces that b2 should be the successor of b1
@@ -556,36 +602,41 @@ void Beachline::evaluateCircleEventCandidate(NodePair* n) const {
         return;
     }
 
+    cout << n->first->toString() << n->second->toString() << endl;
+    cout << n->first->computeIntersection(sweeplineY) << " " <<  n->second->computeIntersection(sweeplineY) << endl;
+
     BLNode* pred = getPredecessor(n->first);
     if(pred) {
         const Point* q = pred->getBreakpoint()->first;
+        cout << "Inside pred " << pred->getBreakpoint()->second << " " << n->first->getBreakpoint()->first << endl;
         const Point* r = n->first->getBreakpoint()->first;
         const Point* s = n->first->getBreakpoint()->second;
         Circle* c = Circle::computeCircumcircle(q,r,s);
         if(c) {
-            pushEvent(c,n->first,pred);
+            pushEvent(c,pred,n->first);
         }
     }
 
     BLNode* succ = getSuccessor(n->second);
     if(succ) {
         const Point* q = succ->getBreakpoint()->second;
+        cout << "Inside succ " << succ->getBreakpoint()->first << " " << n->second->getBreakpoint()->second << endl;
         const Point* r = n->second->getBreakpoint()->first;
         const Point* s = n->second->getBreakpoint()->second;
         Circle* c = Circle::computeCircumcircle(q,r,s);
         if(c) {
-            pushEvent(c,succ,n->second);
+            pushEvent(c,n->second,succ);
+            cout << succ->lEvent <<  " " << n->second->rEvent << endl;
         }
     }
 }
 
-// l is the node that will take the event as it's lEvent, so the naming
-// is actually opposite ordering along the beachline
 void Beachline::pushEvent(Circle* c, BLNode* l, BLNode* r) const {
     if(c->center->y + c->radius > sweeplineY) {
         CircleEvent* ce = new CircleEvent(c,l,r);
-        l->lEvent = ce;
-        r->rEvent = ce;
+        cout << "CE being pushed " << ce->b1->toString() << ce->b2->toString() << endl;
+        r->lEvent = ce;
+        l->rEvent = ce;
         eq.push(new Event(ce));
     }
 }

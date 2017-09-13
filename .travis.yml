@@ -1,0 +1,23 @@
+language: cpp
+
+os:
+  - osx
+
+compiler:
+    - g++
+    - clang
+
+addons:
+    brew:
+        packages:
+            - sdl2
+
+before_install:
+    - brew update
+    - brew ugprade
+
+script:
+    - mkdir build
+    - cd build
+    - cmake -DBUILD_TESTS=ON ..
+    - ctest -vv
